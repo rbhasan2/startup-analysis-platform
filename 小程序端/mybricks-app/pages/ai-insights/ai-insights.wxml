@@ -1,0 +1,128 @@
+<view class="insights-container">
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!companyList || companyList.length === 0}}">
+    <image class="empty-image" src="/assets/images/empty-data.png" mode="aspectFit"></image>
+    <text class="empty-text">您还没有提交创业信息</text>
+    <button class="primary-btn" bindtap="goToStartupForm">录入创业信息</button>
+  </view>
+  
+  <!-- 有数据状态 -->
+  <block wx:else>
+    <!-- 公司选择器 -->
+    <view class="company-selector">
+      <picker bindchange="handleCompanyChange" value="{{currentCompanyIndex}}" range="{{companyList}}" range-key="companyName">
+        <view class="picker-content">
+          <text class="picker-label">{{companyList[currentCompanyIndex].companyName}}</text>
+          <view class="picker-arrow"></view>
+        </view>
+      </picker>
+    </view>
+    
+    <!-- AI洞察内容 -->
+    <view class="content-area">
+      <!-- 加载中 -->
+      <view class="loading-state" wx:if="{{isLoading}}">
+        <view class="loading-spinner"></view>
+        <text class="loading-text">AI正在分析您的创业数据...</text>
+      </view>
+      
+      <!-- 数据已加载 -->
+      <block wx:else>
+        <!-- 成功概率 -->
+        <view class="card probability-card">
+          <view class="card-header">
+            <text class="card-title">创业成功概率</text>
+          </view>
+          <view class="probability-content">
+            <view class="probability-gauge">
+              <view class="gauge-circle {{getProbabilityClass(insightData.success_probability)}}">
+                <text class="gauge-value">{{(insightData.success_probability * 100).toFixed(0)}}%</text>
+              </view>
+            </view>
+            <view class="probability-desc">
+              <text class="desc-text">{{getProbabilityDesc(insightData.success_probability)}}</text>
+            </view>
+          </view>
+        </view>
+        
+        <!-- SWOT分析 -->
+        <view class="card swot-card">
+          <view class="card-header">
+            <text class="card-title">SWOT分析</text>
+          </view>
+          
+          <view class="swot-grid">
+            <view class="swot-item strengths">
+              <view class="swot-header">
+                <text class="swot-title">优势 (S)</text>
+              </view>
+              <view class="swot-content">
+                <view class="point-item" wx:for="{{insightData.strengths}}" wx:key="index">
+                  <text class="point-text">{{item}}</text>
+                </view>
+                <view class="empty-tip" wx:if="{{!insightData.strengths.length}}">暂无数据</view>
+              </view>
+            </view>
+            
+            <view class="swot-item weaknesses">
+              <view class="swot-header">
+                <text class="swot-title">劣势 (W)</text>
+              </view>
+              <view class="swot-content">
+                <view class="point-item" wx:for="{{insightData.weaknesses}}" wx:key="index">
+                  <text class="point-text">{{item}}</text>
+                </view>
+                <view class="empty-tip" wx:if="{{!insightData.weaknesses.length}}">暂无数据</view>
+              </view>
+            </view>
+            
+            <view class="swot-item opportunities">
+              <view class="swot-header">
+                <text class="swot-title">机会 (O)</text>
+              </view>
+              <view class="swot-content">
+                <view class="point-item" wx:for="{{insightData.opportunities}}" wx:key="index">
+                  <text class="point-text">{{item}}</text>
+                </view>
+                <view class="empty-tip" wx:if="{{!insightData.opportunities.length}}">暂无数据</view>
+              </view>
+            </view>
+            
+            <view class="swot-item threats">
+              <view class="swot-header">
+                <text class="swot-title">威胁 (T)</text>
+              </view>
+              <view class="swot-content">
+                <view class="point-item" wx:for="{{insightData.threats}}" wx:key="index">
+                  <text class="point-text">{{item}}</text>
+                </view>
+                <view class="empty-tip" wx:if="{{!insightData.threats.length}}">暂无数据</view>
+              </view>
+            </view>
+          </view>
+        </view>
+        
+        <!-- AI建议 -->
+        <view class="card recommendations-card">
+          <view class="card-header">
+            <text class="card-title">AI建议</text>
+          </view>
+          
+          <view class="recommendations-list">
+            <view class="recommendation-item" wx:for="{{insightData.recommendations}}" wx:key="index">
+              <view class="recommendation-icon"></view>
+              <text class="recommendation-text">{{item}}</text>
+            </view>
+            
+            <view class="empty-tip" wx:if="{{!insightData.recommendations.length}}">暂无建议</view>
+          </view>
+        </view>
+        
+        <!-- 更新按钮 -->
+        <view class="update-btn-area">
+          <button class="update-btn" bindtap="refreshInsights" loading="{{isRefreshing}}">更新AI洞察</button>
+        </view>
+      </block>
+    </view>
+  </block>
+</view>

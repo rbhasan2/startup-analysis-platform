@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI洞察 - 创业分析平台</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-ui@2.15.10/lib/theme-chalk/index.css">
+  <link rel="stylesheet" href="../../css/common.css">
+  <link rel="stylesheet" href="./ai-insights.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 导航栏 -->
+    <header class="navbar">
+      <div class="container navbar-container">
+        <div class="navbar-left">
+          <a href="../../index.html" class="logo">
+            <img src="../../images/logo.png" alt="创业分析平台" class="logo-img">
+            <span class="logo-text">创业分析平台</span>
+          </a>
+          <nav class="main-nav">
+            <a href="../../index.html" class="nav-item">首页</a>
+            <a href="../startup/index.html" class="nav-item">创业信息</a>
+            <a href="../analysis/index.html" class="nav-item">数据分析</a>
+            <a href="./index.html" class="nav-item active">AI洞察</a>
+          </nav>
+        </div>
+        <div class="navbar-right">
+          <div class="user-info">
+            <el-dropdown trigger="click" @command="handleCommand">
+              <span class="el-dropdown-link user-dropdown">
+                <img :src="userInfo.avatar || '../../images/avatar-default.png'" class="user-avatar">
+                <span class="username">{{ userInfo.nickname || userInfo.username }}</span>
+                <i class="el-icon-arrow-down"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+                <el-dropdown-item command="settings">账户设置</el-dropdown-item>
+                <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+          <div class="login-btns">
+            <a href="../login/index.html" class="btn btn-text">登录</a>
+            <a href="../login/index.html?tab=register" class="btn btn-primary">注册</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-container">
+      <div class="container">
+        <div class="ai-insights-page">
+          <!-- 页面标题 -->
+          <div class="page-header">
+            <h1 class="page-title">AI洞察</h1>
+            <p class="page-description">基于大模型的智能分析与建议，为您的创业项目提供专业洞察</p>
+          </div>
+          
+          <!-- 加载中状态 -->
+          <div v-if="loading" class="loading-container">
+            <el-skeleton :rows="10" animated />
+          </div>
+          
+          <!-- 无数据状态 -->
+          <div v-else-if="!startup.id" class="empty-state">
+            <img src="../../images/empty-data.svg" alt="暂无数据" class="empty-icon">
+            <h3>暂无分析数据</h3>
+            <p>您还没有提交创业项目信息，请先填写创业表单</p>
+            <el-button type="primary" @click="goToStartupForm">填写创业表单</el-button>
+          </div>
+          
+          <!-- AI洞察内容 -->
+          <div v-else>
+            <!-- 创业项目信息 -->
+            <div class="startup-info">
+              <div class="info-header">
+                <div>
+                  <h2 class="startup-title">{{ startup.name }}</h2>
+                  <p class="subtitle">{{ getIndustryLabel(startup.industry) }} · {{ getStageLabel(startup.stage) }}</p>
+                </div>
+                <div>
+                  <el-button type="primary" size="small" icon="el-icon-refresh" @click="refreshInsights" :loading="refreshing">刷新洞察</el-button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- AI诊断概览 -->
+            <div class="insight-card">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <i class="el-icon-s-opportunity card-title-icon"></i>
+                  AI诊断概览
+                </h2>
+                <el-tooltip content="AI基于您的创业信息和市场数据生成的综合诊断" placement="top">
+                  <i class="el-icon-info"></i>
+                </el-tooltip>
+              </div>
+              <div class="card-body">
+                <div class="ai-content">
+                  <div class="insight-paragraph" v-html="overview"></div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 战略建议 -->
+            <div class="insight-card">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <i class="el-icon-s-flag card-title-icon"></i>
+                  战略建议
+                </h2>
+                <el-tooltip content="AI针对您的创业项目提供的战略层面建议" placement="top">
+                  <i class="el-icon-info"></i>
+                </el-tooltip>
+              </div>
+              <div class="card-body">
+                <div class="ai-content">
+                  <div class="insight-section">
+                    <h3 class="insight-title">近期战略 (0-6个月)</h3>
+                    <ul class="insight-list">
+                      <li v-for="(item, index) in strategySuggestions.shortTerm" :key="'st'+index">
+                        {{ item }}
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  <div class="insight-section">
+                    <h3 class="insight-title">中期战略 (6-18个月)</h3>
+                    <ul class="insight-list">
+                      <li v-for="(item, index) in strategySuggestions.midTerm" :key="'mt'+index">
+                        {{ item }}
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  <div class="insight-section">
+                    <h3 class="insight-title">长期战略 (18个月以上)</h3>
+                    <ul class="insight-list">
+                      <li v-for="(item, index) in strategySuggestions.longTerm" :key="'lt'+index">
+                        {{ item }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 竞争优势分析 -->
+            <div class="insight-card">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <i class="el-icon-s-data card-title-icon"></i>
+                  竞争优势分析
+                </h2>
+              </div>
+              <div class="card-body">
+                <div class="ai-content">
+                  <div class="insight-paragraph" v-html="competitiveAnalysis"></div>
+                  
+                  <div class="insight-section">
+                    <h3 class="insight-title">核心差异点</h3>
+                    <ul class="insight-list">
+                      <li v-for="(item, index) in competitiveAdvantages" :key="'ca'+index">
+                        {{ item }}
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  <div class="insight-section">
+                    <h3 class="insight-title">强化建议</h3>
+                    <div class="insight-paragraph" v-html="advantageStrengthening"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 风险预警 -->
+            <div class="insight-card">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <i class="el-icon-warning card-title-icon"></i>
+                  风险预警
+                </h2>
+              </div>
+              <div class="card-body">
+                <el-alert
+                  v-for="(risk, index) in risks"
+                  :key="index"
+                  :title="risk.title"
+                  :description="risk.description"
+                  :type="risk.level"
+                  show-icon
+                  style="margin-bottom: 15px;">
+                  <div class="risk-suggestion">
+                    <strong>建议：</strong> {{ risk.suggestion }}
+                  </div>
+                </el-alert>
+              </div>
+            </div>
+            
+            <!-- 行业趋势洞察 -->
+            <div class="insight-card">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <i class="el-icon-s-marketing card-title-icon"></i>
+                  行业趋势洞察
+                </h2>
+              </div>
+              <div class="card-body">
+                <div class="ai-content">
+                  <div class="insight-paragraph" v-html="industryTrends"></div>
+                  
+                  <div class="insight-section">
+                    <h3 class="insight-title">新兴机会</h3>
+                    <ul class="insight-list">
+                      <li v-for="(item, index) in opportunities" :key="'o'+index">
+                        {{ item }}
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  <div class="reference-links">
+                    <h4 class="reference-title">参考资料</h4>
+                    <ul class="reference-list">
+                      <li v-for="(ref, index) in references" :key="'ref'+index">
+                        <a :href="ref.url" target="_blank">{{ ref.title }}</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- AI助手问答 -->
+            <div class="insight-card">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <i class="el-icon-s-comment card-title-icon"></i>
+                  AI助手问答
+                </h2>
+              </div>
+              <div class="card-body">
+                <!-- 聊天消息区域 -->
+                <div class="chat-messages">
+                  <div v-for="(msg, index) in chatMessages" :key="index" 
+                       :class="['message', msg.sender === 'user' ? 'message-user' : 'message-ai']">
+                    <div class="message-avatar">
+                      <img :src="msg.sender === 'user' ? userInfo.avatar || '../../images/avatar-default.png' : '../../images/ai-avatar.png'" alt="Avatar">
+                    </div>
+                    <div>
+                      <div class="message-content" v-html="msg.content"></div>
+                      <div class="message-time">{{ formatTime(msg.time) }}</div>
+                    </div>
+                  </div>
+                  
+                  <!-- AI思考中状态 -->
+                  <div v-if="aiThinking" class="ai-thinking">
+                    <span>AI正在思考</span>
+                    <div class="thinking-dots">
+                      <div class="dot"></div>
+                      <div class="dot"></div>
+                      <div class="dot"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- 问题输入区域 -->
+                <div class="question-area">
+                  <el-input
+                    class="question-input"
+                    type="textarea"
+                    :rows="3"
+                    placeholder="输入您想了解的问题，比如：我的创业项目如何改进营销策略？如何更好地吸引投资人？"
+                    v-model="questionInput"
+                    :disabled="aiThinking">
+                  </el-input>
+                  <div style="text-align: right;">
+                    <el-button type="primary" @click="askQuestion" :loading="aiThinking">提问</el-button>
+                  </div>
+                </div>
+                
+                <div class="question-examples" v-if="chatMessages.length <= 2">
+                  <p>您可以尝试问这些问题:</p>
+                  <el-button size="mini" @click="fillExampleQuestion(0)" type="text">我应该如何改进我的营销策略？</el-button>
+                  <el-button size="mini" @click="fillExampleQuestion(1)" type="text">我们的产品有哪些方面需要优化？</el-button>
+                  <el-button size="mini" @click="fillExampleQuestion(2)" type="text">如何提高我们的用户留存率？</el-button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-logo">
+            <img src="../../images/logo.png" alt="创业分析平台" class="logo-img">
+            <span class="logo-text">创业分析平台</span>
+          </div>
+          <div class="footer-links">
+            <div class="link-group">
+              <h3>关于我们</h3>
+              <a href="#">平台介绍</a>
+              <a href="#">联系我们</a>
+              <a href="#">使用条款</a>
+              <a href="#">隐私政策</a>
+            </div>
+            <div class="link-group">
+              <h3>数据服务</h3>
+              <a href="#">行业数据</a>
+              <a href="#">市场分析</a>
+              <a href="#">API接口</a>
+            </div>
+            <div class="link-group">
+              <h3>帮助支持</h3>
+              <a href="#">新手指南</a>
+              <a href="#">常见问题</a>
+              <a href="#">意见反馈</a>
+            </div>
+            <div class="link-group">
+              <h3>联系方式</h3>
+              <p>邮箱：contact@startup-platform.com</p>
+              <p>电话：400-123-4567</p>
+              <div class="social-links">
+                <a href="#" class="social-icon weixin"></a>
+                <a href="#" class="social-icon weibo"></a>
+                <a href="#" class="social-icon linkedin"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <div class="copyright">
+            &copy; 2025 创业分析平台 All Rights Reserved.
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/element-ui@2.15.10/lib/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios@0.24.0/dist/axios.min.js"></script>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/common.js"></script>
+  <script src="../../js/services.js"></script>
+  <script src="./ai-insights.js"></script>
+</body>
+</html>

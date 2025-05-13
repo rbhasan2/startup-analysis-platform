@@ -1,0 +1,88 @@
+<view class="index-container">
+  <!-- 顶部横幅 -->
+  <view class="banner">
+    <image class="banner-image" src="/assets/images/banner.jpg" mode="aspectFill"></image>
+    <view class="banner-text">
+      <text class="banner-title">创业分析平台</text>
+      <text class="banner-desc">数据驱动的创业决策助手</text>
+    </view>
+  </view>
+  
+  <!-- 统计卡片 -->
+  <view class="stats-section">
+    <view class="stats-card">
+      <text class="stats-num">{{stats.companyCount || 0}}</text>
+      <text class="stats-label">已分析企业</text>
+    </view>
+    <view class="stats-card">
+      <text class="stats-num">{{stats.insightsCount || 0}}</text>
+      <text class="stats-label">AI洞察</text>
+    </view>
+    <view class="stats-card">
+      <text class="stats-num">{{stats.dataPoints || 0}}万</text>
+      <text class="stats-label">数据点</text>
+    </view>
+  </view>
+  
+  <!-- 功能快捷入口 -->
+  <view class="quick-actions">
+    <navigator url="/pages/startup-form/startup-form" class="action-item">
+      <view class="action-icon form-icon"></view>
+      <text class="action-text">录入创业信息</text>
+    </navigator>
+    <navigator url="/pages/analysis/analysis" class="action-item">
+      <view class="action-icon analysis-icon"></view>
+      <text class="action-text">查看分析报告</text>
+    </navigator>
+    <navigator url="/pages/ai-insights/ai-insights" class="action-item">
+      <view class="action-icon ai-icon"></view>
+      <text class="action-text">AI创业洞察</text>
+    </navigator>
+  </view>
+  
+  <!-- 最新动态 -->
+  <view class="news-section">
+    <view class="section-header">
+      <text class="section-title">最新动态</text>
+      <navigator url="/pages/news/news-list" class="more-link">更多</navigator>
+    </view>
+    
+    <view class="news-list">
+      <block wx:for="{{newsList}}" wx:key="id">
+        <view class="news-item" bindtap="goToNewsDetail" data-id="{{item.id}}">
+          <text class="news-title">{{item.title}}</text>
+          <text class="news-time">{{item.publishTime}}</text>
+        </view>
+      </block>
+      
+      <view wx:if="{{!newsList || newsList.length === 0}}" class="empty-tip">
+        <text>暂无最新动态</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 热门分析 -->
+  <view class="insights-section">
+    <view class="section-header">
+      <text class="section-title">热门分析</text>
+      <navigator url="/pages/insights/insights-list" class="more-link">更多</navigator>
+    </view>
+    
+    <view class="insights-list">
+      <block wx:for="{{insightsList}}" wx:key="id">
+        <view class="insight-card" bindtap="goToInsightDetail" data-id="{{item.id}}">
+          <view class="insight-header">
+            <text class="insight-category">{{item.category}}</text>
+            <text class="insight-time">{{item.publishTime}}</text>
+          </view>
+          <text class="insight-title">{{item.title}}</text>
+          <text class="insight-summary">{{item.summary}}</text>
+        </view>
+      </block>
+      
+      <view wx:if="{{!insightsList || insightsList.length === 0}}" class="empty-tip">
+        <text>暂无热门分析</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,229 @@
+/* index.wxss */
+.index-container {
+  padding-bottom: 40rpx;
+}
+
+/* 横幅样式 */
+.banner {
+  position: relative;
+  height: 360rpx;
+  overflow: hidden;
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
+}
+
+.banner-text {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 30rpx;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+}
+
+.banner-title {
+  display: block;
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 10rpx;
+}
+
+.banner-desc {
+  display: block;
+  font-size: 28rpx;
+  color: rgba(255,255,255,0.9);
+}
+
+/* 统计卡片样式 */
+.stats-section {
+  display: flex;
+  justify-content: space-around;
+  padding: 30rpx 20rpx;
+  background-color: #ffffff;
+  margin: -50rpx 30rpx 30rpx;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 10;
+}
+
+.stats-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stats-num {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #1890ff;
+  margin-bottom: 8rpx;
+}
+
+.stats-label {
+  font-size: 24rpx;
+  color: #666666;
+}
+
+/* 快捷操作样式 */
+.quick-actions {
+  display: flex;
+  justify-content: space-around;
+  padding: 20rpx 30rpx 40rpx;
+  background-color: #ffffff;
+  border-radius: 12rpx;
+  margin: 0 30rpx 30rpx;
+  box-shadow: 0 4rpx 10rpx rgba(0,0,0,0.05);
+}
+
+.action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 160rpx;
+}
+
+.action-icon {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  margin-bottom: 16rpx;
+  background-size: 60rpx;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.form-icon {
+  background-color: #e6f7ff;
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzE4OTBmZiI+PHBhdGggZD0iTTE5IDNINWMtMS4xMSAwLTIgLjktMiAydjE0YzAgMS4xLjg5IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0yVjVjMC0xLjEtLjktMi0yLTJ6bS0yIDEwSDdWNWgxMHY4eiIvPjwvc3ZnPg==');
+}
+
+.analysis-icon {
+  background-color: #fff2e8;
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZhNTQxYyI+PHBhdGggZD0iTTMgMThoMTh2LTJIM3Yyem0wLTVoMTh2LTJIM3Yyem0wLTd2MmgxOFY2SDN6Ii8+PC9zdmc+');
+}
+
+.ai-icon {
+  background-color: #f6ffed;
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzUyYzQxYSI+PHBhdGggZD0iTTIxIDExSDExVjNjMC0uNTUtLjQ1LTEtMS0xcy0xIC40NS0xIDF2OEgzYy0uNTUgMC0xIC40NS0xIDFzLjQ1IDEgMSAxaDZWMjFjMCAuNTUuNDUgMSAxIDFzMS0uNDUgMS0xdi04aDEwYy41NSAwIDEtLjQ1IDEtMXMtLjQ1LTEtMS0xeiIvPjwvc3ZnPg==');
+}
+
+.action-text {
+  font-size: 28rpx;
+  color: #333333;
+}
+
+/* 通用区块样式 */
+.news-section, .insights-section {
+  background-color: #ffffff;
+  border-radius: 12rpx;
+  margin: 0 30rpx 30rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 10rpx rgba(0,0,0,0.05);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+.more-link {
+  font-size: 24rpx;
+  color: #1890ff;
+}
+
+/* 最新动态样式 */
+.news-list {
+  margin-top: 20rpx;
+}
+
+.news-item {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.news-item:last-child {
+  border-bottom: none;
+}
+
+.news-title {
+  font-size: 28rpx;
+  color: #333333;
+  margin-bottom: 10rpx;
+  display: block;
+}
+
+.news-time {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+/* 热门分析样式 */
+.insights-list {
+  margin-top: 20rpx;
+}
+
+.insight-card {
+  padding: 20rpx;
+  background-color: #f8f8f8;
+  border-radius: 8rpx;
+  margin-bottom: 20rpx;
+}
+
+.insight-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10rpx;
+}
+
+.insight-category {
+  font-size: 24rpx;
+  color: #1890ff;
+  background-color: #e6f7ff;
+  padding: 4rpx 12rpx;
+  border-radius: 4rpx;
+}
+
+.insight-time {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.insight-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 10rpx;
+  display: block;
+}
+
+.insight-summary {
+  font-size: 24rpx;
+  color: #666666;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* 空数据提示 */
+.empty-tip {
+  text-align: center;
+  padding: 40rpx 0;
+  color: #999999;
+  font-size: 26rpx;
+}

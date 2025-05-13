@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录 - 创业分析平台</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-ui@2.15.10/lib/theme-chalk/index.css">
+  <link rel="stylesheet" href="../../css/common.css">
+  <link rel="stylesheet" href="./login.css">
+</head>
+<body>
+  <div id="app">
+    <div class="login-container">
+      <div class="login-panel">
+        <div class="logo-area">
+          <img src="../../images/logo.png" alt="创业分析平台" class="logo">
+          <h1 class="title">创业分析平台</h1>
+        </div>
+
+        <div class="tabs">
+          <div :class="['tab-item', activeTab === 'login' ? 'active' : '']" @click="activeTab = 'login'">登录</div>
+          <div :class="['tab-item', activeTab === 'register' ? 'active' : '']" @click="activeTab = 'register'">注册</div>
+        </div>
+
+        <!-- 登录表单 -->
+        <div v-if="activeTab === 'login'" class="form-container">
+          <el-form :model="loginForm" :rules="loginRules" ref="loginForm" label-position="top">
+            <el-form-item label="用户名/邮箱" prop="username">
+              <el-input v-model="loginForm.username" placeholder="请输入用户名或邮箱"></el-input>
+            </el-form-item>
+            <el-form-item label="密码" prop="password">
+              <el-input type="password" v-model="loginForm.password" placeholder="请输入密码" show-password></el-input>
+            </el-form-item>
+            <div class="form-options">
+              <el-checkbox v-model="rememberMe">记住我</el-checkbox>
+              <a href="./forgot-password.html" class="forgot-link">忘记密码?</a>
+            </div>
+            <el-button type="primary" class="submit-btn" :loading="loading.login" @click="handleLogin">登录</el-button>
+          </el-form>
+          
+          <div class="other-login">
+            <div class="divider">
+              <span class="divider-text">其他登录方式</span>
+            </div>
+            <div class="social-login">
+              <button class="social-btn wechat">
+                <span class="icon"></span>
+                <span>微信登录</span>
+              </button>
+              <button class="social-btn dingtalk">
+                <span class="icon"></span>
+                <span>钉钉登录</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 注册表单 -->
+        <div v-else class="form-container">
+          <el-form :model="registerForm" :rules="registerRules" ref="registerForm" label-position="top">
+            <el-form-item label="用户名" prop="username">
+              <el-input v-model="registerForm.username" placeholder="请设置用户名"></el-input>
+            </el-form-item>
+            <el-form-item label="邮箱" prop="email">
+              <el-input v-model="registerForm.email" placeholder="请输入邮箱"></el-input>
+            </el-form-item>
+            <el-form-item label="密码" prop="password">
+              <el-input type="password" v-model="registerForm.password" placeholder="请设置密码" show-password></el-input>
+            </el-form-item>
+            <el-form-item label="确认密码" prop="confirmPassword">
+              <el-input type="password" v-model="registerForm.confirmPassword" placeholder="请确认密码" show-password></el-input>
+            </el-form-item>
+            <el-form-item class="agreement">
+              <el-checkbox v-model="registerForm.agreement" required>我已阅读并同意<a href="../about/terms.html" target="_blank">服务条款</a>和<a href="../about/privacy.html" target="_blank">隐私政策</a></el-checkbox>
+            </el-form-item>
+            <el-button type="primary" class="submit-btn" :loading="loading.register" @click="handleRegister">注册</el-button>
+          </el-form>
+        </div>
+      </div>
+
+      <!-- 登录页面右侧信息区域 -->
+      <div class="info-panel">
+        <div class="info-content">
+          <h2 class="info-title">数据驱动的创业决策</h2>
+          <p class="info-desc">加入创业分析平台，利用数据分析和AI技术助力创业成功</p>
+          <div class="feature-list">
+            <div class="feature-item">
+              <div class="feature-icon data-collection"></div>
+              <div class="feature-text">
+                <h3>全面数据采集</h3>
+                <p>自动获取公开数据，结合您提供的创业信息</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon data-analysis"></div>
+              <div class="feature-text">
+                <h3>深度数据分析</h3>
+                <p>多维度分析，发现潜在风险与机会</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon ai-insight"></div>
+              <div class="feature-text">
+                <h3>AI预测与洞察</h3>
+                <p>成功率预测与定制化行动建议</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="info-footer">
+          <p>已有超过2,300家创业企业使用我们的平台</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/element-ui@2.15.10/lib/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios@0.24.0/dist/axios.min.js"></script>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/common.js"></script>
+  <script src="./login.js"></script>
+</body>
+</html>

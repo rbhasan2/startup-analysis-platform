@@ -1,0 +1,63 @@
+# 创业分析平台
+
+这是一个用于分析创业公司数据的综合平台，包含爬虫系统、数据分析工具、创业评估AI模型、Web端和小程序端。
+
+## 系统组件
+
+### 后端服务
+- **NocoBase**: 低代码平台作为后端数据管理系统
+- **爬虫系统**: 基于Spider-Flow的数据爬取组件
+- **数据分析**: 基于Superset的数据分析和可视化工具
+
+### AI模型
+- **创业分析模型**: 基于Python的创业公司分析和评估模型
+
+### 前端展示
+- **Web端**: 基于HTML/CSS/JavaScript的Web前端
+- **小程序端**: 微信小程序界面
+
+## 启动方法
+
+### 1. 启动NocoBase后端
+```
+cd 后端服务/nocobase
+docker-compose up -d
+```
+
+### 2. 启动数据分析服务
+```
+cd 后端服务/数据分析/superset
+docker-compose up -d
+```
+
+### 3. 启动爬虫系统
+```
+cd 后端服务/爬虫系统/spider-flow
+docker-compose up -d
+```
+
+### 4. 构建并启动AI模型
+```
+cd AI模型/simple_model
+docker build -t startup-analysis-model .
+docker run -d -p 5000:5000 --name ai-model startup-analysis-model
+```
+
+### 5. 访问Web端
+启动HTTP服务器并访问
+```
+cd web端
+.\run_server.bat  或运行  powershell -ExecutionPolicy Bypass -File start_server.ps1
+```
+然后在浏览器中访问 http://localhost:3000
+
+### 6. 开发小程序端
+使用微信开发者工具打开 `小程序端/mybricks-app` 目录进行开发与预览
+
+## 系统访问
+
+- **NocoBase管理界面**: http://localhost:8000/
+- **Superset数据分析平台**: http://localhost:8088/
+- **AI模型API**: http://localhost:5000/
+- **Web端**: http://localhost:3000/
+- **小程序端**: 通过微信开发者工具预览

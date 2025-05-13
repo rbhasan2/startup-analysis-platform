@@ -1,0 +1,33 @@
+version: '3'
+services:
+  app:
+    image: nocobase/nocobase:latest
+    ports:
+      - '8000:80'
+    volumes:
+      - ./storage:/app/storage
+      - ./my-plugin:/app/packages/my-plugin
+    environment:
+      - DB_DIALECT=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=nocobase
+      - DB_USER=nocobase
+      - DB_PASSWORD=nocobase
+      - LOCAL_STORAGE_BASE_URL=http://localhost:8000/storage
+    depends_on:
+      - db
+    
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: nocobase
+      POSTGRES_PASSWORD: nocobase
+      POSTGRES_DB: nocobase
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+volumes:
+  postgres-data:

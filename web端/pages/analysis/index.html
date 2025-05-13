@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据分析 - 创业分析平台</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-ui@2.15.10/lib/theme-chalk/index.css">
+  <link rel="stylesheet" href="../../css/common.css">
+  <link rel="stylesheet" href="./analysis.css">
+  <!-- 引入 ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.0/dist/echarts.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- 导航栏 -->
+    <header class="navbar">
+      <div class="container navbar-container">
+        <div class="navbar-left">
+          <a href="../../index.html" class="logo">
+            <img src="../../images/logo.png" alt="创业分析平台" class="logo-img">
+            <span class="logo-text">创业分析平台</span>
+          </a>
+          <nav class="main-nav">
+            <a href="../../index.html" class="nav-item">首页</a>
+            <a href="../startup/index.html" class="nav-item">创业信息</a>
+            <a href="./index.html" class="nav-item active">数据分析</a>
+            <a href="../ai-insights/index.html" class="nav-item">AI洞察</a>
+          </nav>
+        </div>
+        <div class="navbar-right">
+          <div class="user-info">
+            <el-dropdown trigger="click" @command="handleCommand">
+              <span class="el-dropdown-link user-dropdown">
+                <img :src="userInfo.avatar || '../../images/avatar-default.png'" class="user-avatar">
+                <span class="username">{{ userInfo.nickname || userInfo.username }}</span>
+                <i class="el-icon-arrow-down"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+                <el-dropdown-item command="settings">账户设置</el-dropdown-item>
+                <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+          <div class="login-btns">
+            <a href="../login/index.html" class="btn btn-text">登录</a>
+            <a href="../login/index.html?tab=register" class="btn btn-primary">注册</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-container">
+      <div class="container">
+        <div class="analysis-page">
+          <!-- 页面标题 -->
+          <div class="page-header">
+            <h1 class="page-title">数据分析</h1>
+            <p class="page-description">基于您提供的创业项目信息和我们收集的市场数据，为您提供多维度分析</p>
+          </div>
+          
+          <!-- 加载中状态 -->
+          <div v-if="loading" class="loading-container">
+            <el-skeleton :rows="10" animated />
+          </div>
+          
+          <!-- 无数据状态 -->
+          <div v-else-if="!startup.id" class="empty-state">
+            <img src="../../images/empty-data.svg" alt="暂无数据" class="empty-icon">
+            <h3>暂无分析数据</h3>
+            <p>您还没有提交创业项目信息，请先填写创业表单</p>
+            <el-button type="primary" @click="goToStartupForm">填写创业表单</el-button>
+          </div>
+          
+          <!-- 数据分析内容 -->
+          <div v-else>
+            <!-- 创业项目信息 -->
+            <div class="startup-info">
+              <div class="info-header">
+                <div>
+                  <h2 class="startup-title">{{ startup.name }}</h2>
+                  <p class="subtitle">{{ getIndustryLabel(startup.industry) }} · {{ getStageLabel(startup.stage) }}</p>
+                </div>
+                <div>
+                  <el-button type="primary" size="small" icon="el-icon-refresh" @click="refreshAnalysis" :loading="refreshing">刷新分析</el-button>
+                  <el-button size="small" icon="el-icon-edit" @click="editStartup">编辑信息</el-button>
+                </div>
+              </div>
+              <div class="info-content">
+                <el-descriptions :column="3" border>
+                  <el-descriptions-item label="创立时间">{{ startup.foundedDate }}</el-descriptions-item>
+                  <el-descriptions-item label="所在地区">{{ formatLocation(startup.location) }}</el-descriptions-item>
+                  <el-descriptions-item label="员工规模">{{ startup.employeeCount }}</el-descriptions-item>
+                  <el-descriptions-item label="融资阶段">{{ getFundingStageLabel(startup.fundingStage) }}</el-descriptions-item>
+                  <el-descriptions-item label="已融资金额">{{ startup.fundingAmount }} 万元</el-descriptions-item>
+                  <el-descriptions-item label="最新估值">{{ startup.valuation }} 万元</el-descriptions-item>
+                </el-descriptions>
+              </div>
+            </div>
+            
+            <!-- 评分卡片 -->
+            <div class="score-cards">
+              <div class="score-card">
+                <h3 class="score-title">综合评分</h3>
+                <p :class="['score-value', getScoreClass(overallScore)]">{{ overallScore }}/100</p>
+              </div>
+              <div class="score-card">
+                <h3 class="score-title">产品评分</h3>
+                <p :class="['score-value', getScoreClass(productScore)]">{{ productScore }}/100</p>
+              </div>
+              <div class="score-card">
+                <h3 class="score-title">团队评分</h3>
+                <p :class="['score-value', getScoreClass(teamScore)]">{{ teamScore }}/100</p>
+              </div>
+              <div class="score-card">
+                <h3 class="score-title">市场评分</h3>
+                <p :class="['score-value', getScoreClass(marketScore)]">{{ marketScore }}/100</p>
+              </div>
+              <div class="score-card">
+                <h3 class="score-title">财务评分</h3>
+                <p :class="['score-value', getScoreClass(financeScore)]">{{ financeScore }}/100</p>
+              </div>
+            </div>
+            
+            <!-- 市场分析 -->
+            <div class="analysis-card">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <i class="el-icon-s-marketing card-title-icon"></i>
+                  市场分析
+                </h2>
+              </div>
+              <div class="card-body">
+                <div class="chart-header">
+                  <h3 class="chart-title">市场规模与增长趋势</h3>
+                  <div class="chart-actions">
+                    <el-radio-group v-model="marketChartPeriod" size="mini">
+                      <el-radio-button label="year">年度</el-radio-button>
+                      <el-radio-button label="quarter">季度</el-radio-button>
+                    </el-radio-group>
+                  </div>
+                </div>
+                <div id="marketSizeChart" class="chart-container"></div>
+                
+                <div class="analysis-notes">
+                  <h4 class="note-title">市场分析说明</h4>
+                  <p class="note-content">
+                    {{ marketAnalysisNote }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 竞品分析 -->
+            <div class="analysis-card">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <i class="el-icon-s-cooperation card-title-icon"></i>
+                  竞争格局分析
+                </h2>
+              </div>
+              <div class="card-body">
+                <div class="chart-header">
+                  <h3 class="chart-title">竞争对手对比</h3>
+                </div>
+                <div id="competitorChart" class="chart-container"></div>
+                
+                <h3 style="margin-top: 30px;">主要竞争对手</h3>
+                <el-table :data="competitors" border stripe class="data-table">
+                  <el-table-column prop="name" label="企业名称"></el-table-column>
+                  <el-table-column prop="founded" label="成立时间"></el-table-column>
+                  <el-table-column prop="funding" label="融资情况"></el-table-column>
+                  <el-table-column prop="marketShare" label="市场份额"></el-table-column>
+                  <el-table-column prop="advantage" label="核心优势"></el-table-column>
+                </el-table>
+                
+                <div class="analysis-notes">
+                  <h4 class="note-title">竞争分析说明</h4>
+                  <p class="note-content">
+                    {{ competitorAnalysisNote }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 风险评估 -->
+            <div class="analysis-card">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <i class="el-icon-warning-outline card-title-icon"></i>
+                  风险评估
+                </h2>
+              </div>
+              <div class="card-body">
+                <div class="chart-header">
+                  <h3 class="chart-title">风险雷达图</h3>
+                </div>
+                <div id="riskChart" class="chart-container"></div>
+                
+                <h3 style="margin-top: 30px;">详细风险评估</h3>
+                <el-table :data="risks" border stripe class="data-table">
+                  <el-table-column prop="category" label="风险类型"></el-table-column>
+                  <el-table-column prop="level" label="风险等级">
+                    <template slot-scope="scope">
+                      <el-tag :type="getRiskLevelType(scope.row.level)">{{ scope.row.level }}</el-tag>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="description" label="风险描述"></el-table-column>
+                  <el-table-column prop="suggestion" label="缓解建议"></el-table-column>
+                </el-table>
+              </div>
+            </div>
+            
+            <!-- 财务预测 -->
+            <div class="analysis-card">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <i class="el-icon-s-finance card-title-icon"></i>
+                  财务预测
+                </h2>
+              </div>
+              <div class="card-body">
+                <div class="chart-header">
+                  <h3 class="chart-title">未来三年财务预测</h3>
+                  <div class="chart-actions">
+                    <el-button-group>
+                      <el-button size="mini" :type="forecastType === 'revenue' ? 'primary' : ''" @click="forecastType = 'revenue'">收入</el-button>
+                      <el-button size="mini" :type="forecastType === 'cost' ? 'primary' : ''" @click="forecastType = 'cost'">成本</el-button>
+                      <el-button size="mini" :type="forecastType === 'profit' ? 'primary' : ''" @click="forecastType = 'profit'">利润</el-button>
+                    </el-button-group>
+                  </div>
+                </div>
+                <div id="financeForecastChart" class="chart-container"></div>
+                
+                <div class="analysis-notes">
+                  <h4 class="note-title">财务预测说明</h4>
+                  <p class="note-content">
+                    {{ financeAnalysisNote }}
+                  </p>
+                </div>
+                
+                <el-alert
+                  title="财务预测免责声明"
+                  type="warning"
+                  description="财务预测结果仅供参考，基于您提供的数据和行业平均水平计算。实际结果可能因市场变化、政策调整等因素而有所不同。"
+                  show-icon
+                  :closable="false"
+                  style="margin-top: 20px;">
+                </el-alert>
+              </div>
+            </div>
+            
+            <!-- 分析总结 -->
+            <div class="analysis-card">
+              <div class="card-header">
+                <h2 class="card-title">
+                  <i class="el-icon-s-claim card-title-icon"></i>
+                  分析总结
+                </h2>
+              </div>
+              <div class="card-body">
+                <div class="chart-header">
+                  <h3 class="chart-title">SWOT分析</h3>
+                </div>
+                <el-row :gutter="20">
+                  <el-col :span="12">
+                    <el-card shadow="hover" class="swot-card">
+                      <div slot="header">
+                        <h4 style="margin: 0; color: #409EFF;">优势 (Strengths)</h4>
+                      </div>
+                      <ul>
+                        <li v-for="(item, index) in swotAnalysis.strengths" :key="'s'+index">{{ item }}</li>
+                      </ul>
+                    </el-card>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-card shadow="hover" class="swot-card">
+                      <div slot="header">
+                        <h4 style="margin: 0; color: #F56C6C;">劣势 (Weaknesses)</h4>
+                      </div>
+                      <ul>
+                        <li v-for="(item, index) in swotAnalysis.weaknesses" :key="'w'+index">{{ item }}</li>
+                      </ul>
+                    </el-card>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="20" style="margin-top: 20px;">
+                  <el-col :span="12">
+                    <el-card shadow="hover" class="swot-card">
+                      <div slot="header">
+                        <h4 style="margin: 0; color: #67C23A;">机会 (Opportunities)</h4>
+                      </div>
+                      <ul>
+                        <li v-for="(item, index) in swotAnalysis.opportunities" :key="'o'+index">{{ item }}</li>
+                      </ul>
+                    </el-card>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-card shadow="hover" class="swot-card">
+                      <div slot="header">
+                        <h4 style="margin: 0; color: #E6A23C;">威胁 (Threats)</h4>
+                      </div>
+                      <ul>
+                        <li v-for="(item, index) in swotAnalysis.threats" :key="'t'+index">{{ item }}</li>
+                      </ul>
+                    </el-card>
+                  </el-col>
+                </el-row>
+                
+                <h3 style="margin-top: 30px;">总结与建议</h3>
+                <div class="analysis-notes" style="background-color: #ecf5ff;">
+                  <p class="note-content" style="white-space: pre-line;">{{ summaryContent }}</p>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                  <el-button type="primary" icon="el-icon-s-promotion" @click="goToAIInsights">获取AI洞察与建议</el-button>
+                  <el-button type="success" icon="el-icon-download" @click="downloadReport">导出分析报告</el-button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-logo">
+            <img src="../../images/logo.png" alt="创业分析平台" class="logo-img">
+            <span class="logo-text">创业分析平台</span>
+          </div>
+          <div class="footer-links">
+            <div class="link-group">
+              <h3>关于我们</h3>
+              <a href="#">平台介绍</a>
+              <a href="#">联系我们</a>
+              <a href="#">使用条款</a>
+              <a href="#">隐私政策</a>
+            </div>
+            <div class="link-group">
+              <h3>数据服务</h3>
+              <a href="#">行业数据</a>
+              <a href="#">市场分析</a>
+              <a href="#">API接口</a>
+            </div>
+            <div class="link-group">
+              <h3>帮助支持</h3>
+              <a href="#">新手指南</a>
+              <a href="#">常见问题</a>
+              <a href="#">意见反馈</a>
+            </div>
+            <div class="link-group">
+              <h3>联系方式</h3>
+              <p>邮箱：contact@startup-platform.com</p>
+              <p>电话：400-123-4567</p>
+              <div class="social-links">
+                <a href="#" class="social-icon weixin"></a>
+                <a href="#" class="social-icon weibo"></a>
+                <a href="#" class="social-icon linkedin"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <div class="copyright">
+            &copy; 2025 创业分析平台 All Rights Reserved.
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/element-ui@2.15.10/lib/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios@0.24.0/dist/axios.min.js"></script>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/common.js"></script>
+  <script src="./analysis.js"></script>
+</body>
+</html>

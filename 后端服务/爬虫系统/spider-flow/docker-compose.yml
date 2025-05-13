@@ -1,0 +1,28 @@
+version: '3.3'
+services:
+  spider-flow:
+    image: spiderflow/spider-flow:latest
+    restart: always
+    ports:
+      - '8889:8080'
+    volumes:
+      - ./data:/spider-flow/data
+    environment:
+      - TZ=Asia/Shanghai
+      - MYSQL_HOST=spider-flow-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=spiderflow
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=123456
+    depends_on:
+      - spider-flow-mysql
+
+  spider-flow-mysql:
+    image: mysql:5.7
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=spiderflow
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci

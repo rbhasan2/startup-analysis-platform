@@ -1,0 +1,55 @@
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器文件
+.idea/
+.vscode/
+*.swp
+*.swo
+.vs/
+
+# 依赖和构建文件
+node_modules/
+dist/
+build/
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+# Docker相关
+.docker/
+docker-data/
+
+# 数据库文件
+*.sqlite
+*.db-journal
+*.log
+
+# 凭证和敏感文件
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+*.cert
+
+# 后端服务/数据分析/superset特定文件
+后端服务/数据分析/superset/superset_home/*.db
+后端服务/数据分析/superset/superset_home/*.db-journal
+
+# NocoBase存储
+后端服务/nocobase/storage/uploads/
+
+# AI模型缓存
+AI模型/simple_model/__pycache__/
+AI模型/simple_model/*.h5
+AI模型/simple_model/*.pkl
+
+# 临时文件
+tmp/
+temp/

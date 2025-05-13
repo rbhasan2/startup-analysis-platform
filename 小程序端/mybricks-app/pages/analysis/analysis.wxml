@@ -1,0 +1,127 @@
+<view class="analysis-container">
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!companyList || companyList.length === 0}}">
+    <image class="empty-image" src="/assets/images/empty-data.png" mode="aspectFit"></image>
+    <text class="empty-text">您还没有提交创业信息</text>
+    <button class="primary-btn" bindtap="goToStartupForm">录入创业信息</button>
+  </view>
+  
+  <!-- 有数据状态 -->
+  <block wx:else>
+    <!-- 公司选择器 -->
+    <view class="company-selector">
+      <picker bindchange="handleCompanyChange" value="{{currentCompanyIndex}}" range="{{companyList}}" range-key="companyName">
+        <view class="picker-content">
+          <text class="picker-label">{{companyList[currentCompanyIndex].companyName}}</text>
+          <view class="picker-arrow"></view>
+        </view>
+      </picker>
+    </view>
+    
+    <!-- 分析概览 -->
+    <view class="overview-card">
+      <view class="card-header">
+        <text class="card-title">分析概览</text>
+        <text class="update-time">更新于: {{analysisData.updateTime || '未知'}}</text>
+      </view>
+      
+      <view class="score-section">
+        <view class="score-circle {{getScoreClass(analysisData.scorePercentage)}}">
+          <text class="score-value">{{analysisData.scorePercentage || 0}}%</text>
+        </view>
+        <view class="score-desc">
+          <text class="score-label">发展潜力评分</text>
+          <text class="score-status">{{getScoreStatus(analysisData.scorePercentage)}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 主要指标 -->
+    <view class="metrics-card">
+      <view class="card-header">
+        <text class="card-title">主要指标</text>
+      </view>
+      
+      <view class="metrics-grid">
+        <view class="metric-item" wx:for="{{analysisData.metrics}}" wx:key="name">
+          <text class="metric-value {{item.trend === 'up' ? 'text-success' : item.trend === 'down' ? 'text-danger' : ''}}">
+            {{item.value}}
+            <text class="trend-arrow" wx:if="{{item.trend === 'up'}}">↑</text>
+            <text class="trend-arrow" wx:if="{{item.trend === 'down'}}">↓</text>
+          </text>
+          <text class="metric-name">{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 数据图表 -->
+    <view class="chart-card">
+      <view class="card-header">
+        <text class="card-title">行业对比</text>
+      </view>
+      
+      <view class="chart-container">
+        <image class="chart-image" src="{{analysisData.chartUrl || '/assets/images/chart-placeholder.png'}}" mode="widthFix"></image>
+      </view>
+      
+      <view class="chart-legend">
+        <view class="legend-item">
+          <view class="legend-color company-color"></view>
+          <text class="legend-text">您的公司</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-color industry-color"></view>
+          <text class="legend-text">行业平均</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 竞争对手分析 -->
+    <view class="competitors-card">
+      <view class="card-header">
+        <text class="card-title">竞争对手分析</text>
+      </view>
+      
+      <view class="competitors-list">
+        <view class="competitor-item" wx:for="{{analysisData.competitors}}" wx:key="name">
+          <view class="competitor-info">
+            <text class="competitor-name">{{item.name}}</text>
+            <text class="competitor-desc">{{item.description}}</text>
+          </view>
+          <view class="competitor-score {{getCompetitorScoreClass(item.score)}}">
+            <text>{{item.score}}%</text>
+          </view>
+        </view>
+        
+        <view wx:if="{{!analysisData.competitors || analysisData.competitors.length === 0}}" class="empty-tip">
+          <text>暂无竞争对手数据</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 建议 -->
+    <view class="actions-card">
+      <view class="card-header">
+        <text class="card-title">关键建议</text>
+      </view>
+      
+      <view class="actions-list">
+        <view class="action-item" wx:for="{{analysisData.suggestions}}" wx:key="index">
+          <view class="action-icon"></view>
+          <text class="action-text">{{item}}</text>
+        </view>
+        
+        <view wx:if="{{!analysisData.suggestions || analysisData.suggestions.length === 0}}" class="empty-tip">
+          <text>暂无建议</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 底部按钮 -->
+    <view class="bottom-actions">
+      <navigator url="/pages/ai-insights/ai-insights?company_id={{currentCompanyId}}" class="secondary-btn">
+        查看AI洞察
+      </navigator>
+    </view>
+  </block>
+</view>

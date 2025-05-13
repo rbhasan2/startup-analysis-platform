@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>创业分析平台</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-ui@2.15.10/lib/theme-chalk/index.css">
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 页面顶部导航栏 -->
+    <header class="header">
+      <div class="container">
+        <div class="logo">
+          <img src="images/logo.png" alt="创业分析平台" class="logo-img">
+          <span class="logo-text">创业分析平台</span>
+        </div>
+        <nav class="nav">
+          <a href="index.html" class="nav-item active">首页</a>
+          <a href="pages/startup/index.html" class="nav-item">创业信息</a>
+          <a href="pages/analysis/index.html" class="nav-item">分析</a>
+          <a href="pages/ai-insights/index.html" class="nav-item">AI洞察</a>
+          <a href="pages/user/index.html" class="nav-item">我的</a>
+        </nav>
+        <div class="user-info" v-if="isLogin">
+          <span class="welcome">欢迎，{{ userInfo.name }}</span>
+          <el-dropdown @command="handleUserAction">
+            <span class="el-dropdown-link">
+              <img :src="userInfo.avatar || 'images/default-avatar.png'" alt="头像" class="avatar">
+              <i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="profile">个人资料</el-dropdown-item>
+              <el-dropdown-item command="settings">设置</el-dropdown-item>
+              <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+        <div class="login-btns" v-else>
+          <a href="pages/login/index.html" class="btn-login">登录</a>
+          <a href="pages/login/register.html" class="btn-register">注册</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主页内容 -->
+    <div class="main">
+      <!-- 横幅区域 -->
+      <section class="banner">
+        <div class="container">
+          <div class="banner-content">
+            <h1 class="banner-title">数据驱动的创业决策助手</h1>
+            <p class="banner-desc">通过大数据分析和AI技术，为创业者提供全方位的决策支持</p>          <div class="banner-actions">
+            <a href="pages/startup/index.html" class="btn btn-primary">开始分析</a>
+            <a href="#features" class="btn btn-outline">了解更多</a>
+          </div>
+          </div>
+          <div class="banner-image">
+            <img src="images/banner-illustration.png" alt="创业分析平台" class="illustration">
+          </div>
+        </div>
+      </section>
+
+      <!-- 统计数字区 -->
+      <section class="stats-section">
+        <div class="container">
+          <div class="stats-grid">
+            <div class="stats-item">
+              <div class="stats-number">{{ stats.companyCount }}</div>
+              <div class="stats-label">已分析企业</div>
+            </div>
+            <div class="stats-item">
+              <div class="stats-number">{{ stats.insightsCount }}</div>
+              <div class="stats-label">AI洞察</div>
+            </div>
+            <div class="stats-item">
+              <div class="stats-number">{{ stats.dataPoints }}万</div>
+              <div class="stats-label">数据点</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 功能特点区 -->
+      <section id="features" class="features-section">
+        <div class="container">
+          <h2 class="section-title">平台功能</h2>
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon data-icon"></div>
+              <h3 class="feature-title">数据采集</h3>
+              <p class="feature-desc">自动抓取互联网公开数据，结合您提供的创业信息，构建全面的数据基础</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon analysis-icon"></div>
+              <h3 class="feature-title">数据分析</h3>
+              <p class="feature-desc">通过Superset分析引擎，从多维度分析创业数据，挖掘潜在价值和风险</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon ai-icon"></div>
+              <h3 class="feature-title">AI洞察</h3>
+              <p class="feature-desc">基于机器学习模型，预测创业成功率，生成SWOT分析和具体行动建议</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 最新动态区 -->
+      <section class="news-section">
+        <div class="container">
+          <div class="section-header">
+            <h2 class="section-title">最新动态</h2>
+            <a href="pages/news/index.html" class="more-link">查看更多</a>
+          </div>
+          <div class="news-list">
+            <div v-for="item in newsList" :key="item.id" class="news-item" @click="goToNewsDetail(item.id)">
+              <div class="news-content">
+                <h3 class="news-title">{{ item.title }}</h3>
+                <p class="news-summary">{{ item.summary }}</p>
+                <div class="news-meta">
+                  <span class="news-time">{{ item.publishTime }}</span>
+                </div>
+              </div>
+              <div class="news-image" v-if="item.coverUrl">
+                <img :src="item.coverUrl" alt="新闻图片">
+              </div>
+            </div>
+            <div v-if="newsList.length === 0" class="empty-tip">
+              暂无最新动态
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 热门分析区 -->
+      <section class="insights-section">
+        <div class="container">
+          <div class="section-header">
+            <h2 class="section-title">热门分析</h2>
+            <a href="pages/insights/index.html" class="more-link">查看更多</a>
+          </div>
+          <div class="insights-grid">
+            <div v-for="item in insightsList" :key="item.id" class="insight-card" @click="goToInsightDetail(item.id)">
+              <div class="insight-category">{{ item.category }}</div>
+              <h3 class="insight-title">{{ item.title }}</h3>
+              <p class="insight-summary">{{ item.summary }}</p>
+              <div class="insight-meta">
+                <span class="insight-time">{{ item.publishTime }}</span>
+              </div>
+            </div>
+            <div v-if="insightsList.length === 0" class="empty-tip">
+              暂无热门分析
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 页脚区域 -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-logo">
+            <img src="images/logo-white.png" alt="创业分析平台" class="logo-img">
+            <span class="logo-text">创业分析平台</span>
+          </div>
+          <div class="footer-links">
+            <div class="link-group">
+              <h4 class="group-title">关于我们</h4>
+              <a href="#" class="link-item">平台介绍</a>
+              <a href="#" class="link-item">团队成员</a>
+              <a href="#" class="link-item">联系我们</a>
+            </div>
+            <div class="link-group">
+              <h4 class="group-title">服务支持</h4>
+              <a href="#" class="link-item">使用指南</a>
+              <a href="#" class="link-item">常见问题</a>
+              <a href="#" class="link-item">反馈建议</a>
+            </div>
+            <div class="link-group">
+              <h4 class="group-title">友情链接</h4>
+              <a href="#" class="link-item">创业孵化器</a>
+              <a href="#" class="link-item">投资机构</a>
+              <a href="#" class="link-item">创业社区</a>
+            </div>
+          </div>
+          <div class="footer-contact">
+            <h4 class="group-title">联系方式</h4>
+            <p class="contact-item">邮箱：contact@startup-analysis.com</p>
+            <p class="contact-item">电话：400-123-4567</p>
+            <div class="social-links">
+              <a href="#" class="social-item weixin">微信</a>
+              <a href="#" class="social-item weibo">微博</a>
+              <a href="#" class="social-item linkedin">领英</a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p class="copyright">© {{ new Date().getFullYear() }} 创业分析平台 版权所有</p>
+          <div class="terms">
+            <a href="#" class="terms-link">隐私政策</a>
+            <a href="#" class="terms-link">使用条款</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/element-ui@2.15.10/lib/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios@0.24.0/dist/axios.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/index.js"></script>
+</body>
+</html>

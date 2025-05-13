@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>创业信息表单 - 创业分析平台</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-ui@2.15.10/lib/theme-chalk/index.css">
+  <link rel="stylesheet" href="../../css/common.css">
+  <link rel="stylesheet" href="./startup.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 导航栏 -->
+    <header class="navbar">
+      <div class="container navbar-container">
+        <div class="navbar-left">
+          <a href="../../index.html" class="logo">
+            <img src="../../images/logo.png" alt="创业分析平台" class="logo-img">
+            <span class="logo-text">创业分析平台</span>
+          </a>
+          <nav class="main-nav">
+            <a href="../../index.html" class="nav-item">首页</a>
+            <a href="./index.html" class="nav-item active">创业信息</a>
+            <a href="../analysis/index.html" class="nav-item">数据分析</a>
+            <a href="../ai-insights/index.html" class="nav-item">AI洞察</a>
+          </nav>
+        </div>
+        <div class="navbar-right">
+          <div class="user-info">
+            <el-dropdown trigger="click" @command="handleCommand">
+              <span class="el-dropdown-link user-dropdown">
+                <img :src="userInfo.avatar || '../../images/avatar-default.png'" class="user-avatar">
+                <span class="username">{{ userInfo.nickname || userInfo.username }}</span>
+                <i class="el-icon-arrow-down"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+                <el-dropdown-item command="settings">账户设置</el-dropdown-item>
+                <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+          <div class="login-btns">
+            <a href="../login/index.html" class="btn btn-text">登录</a>
+            <a href="../login/index.html?tab=register" class="btn btn-primary">注册</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-container">
+      <div class="container">
+        <div class="startup-page">
+          <div class="page-header">
+            <h1 class="page-title">创业项目信息</h1>
+            <p class="page-description">填写您的创业项目信息，获取数据分析与AI洞察</p>
+          </div>
+          
+          <!-- 进度指示 -->
+          <div class="steps-wrapper">
+            <el-steps :active="activeStep" finish-status="success">
+              <el-step title="基本信息"></el-step>
+              <el-step title="创始团队"></el-step>
+              <el-step title="产品和市场"></el-step>
+              <el-step title="财务状况"></el-step>
+            </el-steps>
+          </div>
+          
+          <!-- 表单主体 -->
+          <el-form :model="startupForm" :rules="rules" ref="startupForm" label-width="120px" class="startup-form">
+            <!-- 步骤1: 基本信息 -->
+            <div v-show="activeStep === 0">
+              <div class="form-card">
+                <div class="card-header">
+                  <div class="card-icon">
+                    <i class="el-icon-s-flag"></i>
+                  </div>
+                  <h2 class="card-title">项目基本信息</h2>
+                </div>
+                
+                <el-form-item label="项目名称" prop="name">
+                  <el-input v-model="startupForm.name" placeholder="请输入创业项目名称"></el-input>
+                </el-form-item>
+                
+                <el-form-item label="所属行业" prop="industry">
+                  <el-select v-model="startupForm.industry" placeholder="请选择所属行业">
+                    <el-option
+                      v-for="item in industryOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+                
+                <el-form-item label="创业阶段" prop="stage">
+                  <el-select v-model="startupForm.stage" placeholder="请选择创业阶段">
+                    <el-option
+                      v-for="item in stageOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+                
+                <el-form-item label="成立时间" prop="foundedDate">
+                  <el-date-picker
+                    v-model="startupForm.foundedDate"
+                    type="date"
+                    placeholder="选择日期"
+                    format="yyyy-MM-dd"
+                    value-format="yyyy-MM-dd">
+                  </el-date-picker>
+                </el-form-item>
+                
+                <el-form-item label="所在地区" prop="location">
+                  <el-cascader
+                    v-model="startupForm.location"
+                    :options="locationOptions"
+                    placeholder="请选择所在地区">
+                  </el-cascader>
+                </el-form-item>
+              </div>
+              
+              <div class="form-card">
+                <div class="card-header">
+                  <div class="card-icon">
+                    <i class="el-icon-s-shop"></i>
+                  </div>
+                  <h2 class="card-title">企业信息</h2>
+                </div>
+                
+                <el-form-item label="企业类型" prop="companyType">
+                  <el-select v-model="startupForm.companyType" placeholder="请选择企业类型">
+                    <el-option label="有限责任公司" value="LLC"></el-option>
+                    <el-option label="股份有限公司" value="Corporation"></el-option>
+                    <el-option label="合伙企业" value="Partnership"></el-option>
+                    <el-option label="个人独资企业" value="SoleProprietorship"></el-option>
+                    <el-option label="尚未注册" value="NotRegistered"></el-option>
+                  </el-select>
+                </el-form-item>
+                
+                <el-form-item label="注册资本" prop="registeredCapital">
+                  <el-input-number v-model="startupForm.registeredCapital" :min="0" :step="10" controls-position="right"></el-input-number>
+                  <span style="margin-left: 10px;">万元</span>
+                </el-form-item>
+                
+                <el-form-item label="员工规模" prop="employeeCount">
+                  <el-select v-model="startupForm.employeeCount" placeholder="请选择员工规模">
+                    <el-option label="1-5人" value="1-5"></el-option>
+                    <el-option label="6-15人" value="6-15"></el-option>
+                    <el-option label="16-50人" value="16-50"></el-option>
+                    <el-option label="51-100人" value="51-100"></el-option>
+                    <el-option label="100人以上" value="100+"></el-option>
+                  </el-select>
+                </el-form-item>
+                
+                <el-form-item label="企业官网" prop="website">
+                  <el-input v-model="startupForm.website" placeholder="请输入企业官网地址（选填）"></el-input>
+                </el-form-item>
+                
+                <el-form-item label="联系邮箱" prop="email">
+                  <el-input v-model="startupForm.email" placeholder="请输入联系邮箱"></el-input>
+                </el-form-item>
+              </div>
+              
+              <div class="form-card">
+                <div class="card-header">
+                  <div class="card-icon">
+                    <i class="el-icon-document"></i>
+                  </div>
+                  <h2 class="card-title">项目简介</h2>
+                </div>
+                
+                <el-form-item label="一句话介绍" prop="tagline">
+                  <el-input v-model="startupForm.tagline" placeholder="用一句话简洁描述您的项目"></el-input>
+                </el-form-item>
+                
+                <el-form-item label="项目详情" prop="description">
+                  <el-input 
+                    type="textarea" 
+                    v-model="startupForm.description" 
+                    :rows="5"
+                    placeholder="详细描述您的项目愿景、使命和主要业务">
+                  </el-input>
+                </el-form-item>
+                
+                <el-form-item label="解决的问题" prop="problem">
+                  <el-input 
+                    type="textarea" 
+                    v-model="startupForm.problem" 
+                    :rows="3"
+                    placeholder="您的项目解决了什么问题？为什么这是一个值得解决的问题？">
+                  </el-input>
+                </el-form-item>
+              </div>
+            </div>
+            
+            <!-- 步骤2: 创始团队 -->
+            <div v-show="activeStep === 1">
+              <div class="form-card">
+                <div class="card-header">
+                  <div class="card-icon">
+                    <i class="el-icon-user"></i>
+                  </div>
+                  <h2 class="card-title">创始人信息</h2>
+                </div>
+                
+                <el-form-item label="创始人姓名" prop="founderName">
+                  <el-input v-model="startupForm.founderName" placeholder="请输入创始人姓名"></el-input>
+                </el-form-item>
+                
+                <el-form-item label="职位" prop="founderTitle">
+                  <el-input v-model="startupForm.founderTitle" placeholder="请输入创始人职位"></el-input>
+                </el-form-item>
+                
+                <el-form-item label="教育背景" prop="founderEducation">
+                  <el-select v-model="startupForm.founderEducation" placeholder="请选择最高学历">
+                    <el-option label="高中及以下" value="high-school"></el-option>
+                    <el-option label="大专" value="college"></el-option>
+                    <el-option label="本科" value="bachelor"></el-option>
+                    <el-option label="硕士" value="master"></el-option>
+                    <el-option label="博士" value="phd"></el-option>
+                  </el-select>
+                </el-form-item>
+                
+                <el-form-item label="工作经验" prop="founderExperience">
+                  <el-input-number v-model="startupForm.founderExperience" :min="0" controls-position="right"></el-input-number>
+                  <span style="margin-left: 10px;">年</span>
+                </el-form-item>
+                
+                <el-form-item label="相关行业经验" prop="industryExperience">
+                  <el-switch
+                    v-model="startupForm.industryExperience"
+                    active-text="有相关行业经验"
+                    inactive-text="无相关行业经验">
+                  </el-switch>
+                </el-form-item>
+                
+                <el-form-item label="创业经历" prop="previousStartups">
+                  <el-input-number v-model="startupForm.previousStartups" :min="0" controls-position="right"></el-input-number>
+                  <span style="margin-left: 10px;">次</span>
+                </el-form-item>
+              </div>
+              
+              <div class="form-card">
+                <div class="card-header">
+                  <div class="card-icon">
+                    <i class="el-icon-s-custom"></i>
+                  </div>
+                  <h2 class="card-title">核心团队</h2>
+                </div>
+                
+                <div v-for="(member, index) in startupForm.coreTeam" :key="index" class="team-member">
+                  <el-divider content-position="left" v-if="index > 0">团队成员 {{ index + 1 }}</el-divider>
+                  
+                  <el-form-item :label="'姓名'" :prop="'coreTeam.' + index + '.name'" :rules="rules.memberName">
+                    <el-input v-model="member.name" placeholder="请输入团队成员姓名"></el-input>
+                  </el-form-item>
+                  
+                  <el-form-item :label="'职位'" :prop="'coreTeam.' + index + '.title'" :rules="rules.memberTitle">
+                    <el-input v-model="member.title" placeholder="请输入团队成员职位"></el-input>
+                  </el-form-item>
+                  
+                  <el-form-item :label="'背景介绍'" :prop="'coreTeam.' + index + '.background'">
+                    <el-input type="textarea" v-model="member.background" :rows="2" placeholder="简要介绍团队成员背景（教育、经验等）"></el-input>
+                  </el-form-item>
+                  
+                  <div style="text-align: right; margin-top: 10px;" v-if="index > 0">
+                    <el-button size="mini" type="danger" @click="removeTeamMember(index)">删除</el-button>
+                  </div>
+                </div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                  <el-button type="primary" plain icon="el-icon-plus" @click="addTeamMember">添加团队成员</el-button>
+                </div>
+              </div>
+              
+              <div class="form-card">
+                <div class="card-header">
+                  <div class="card-icon">
+                    <i class="el-icon-s-help"></i>
+                  </div>
+                  <h2 class="card-title">团队优势</h2>
+                </div>
+                
+                <el-form-item label="团队优势" prop="teamStrength">
+                  <el-input 
+                    type="textarea" 
+                    v-model="startupForm.teamStrength" 
+                    :rows="3"
+                    placeholder="描述团队的核心优势，如专业背景、互补技能、行业资源等">
+                  </el-input>
+                </el-form-item>
+                
+                <el-form-item label="招聘计划" prop="hiringPlan">
+                  <el-checkbox-group v-model="startupForm.hiringPlan">
+                    <el-checkbox label="技术人员">技术人员</el-checkbox>
+                    <el-checkbox label="产品人员">产品人员</el-checkbox>
+                    <el-checkbox label="营销人员">营销人员</el-checkbox>
+                    <el-checkbox label="销售人员">销售人员</el-checkbox>
+                    <el-checkbox label="运营人员">运营人员</el-checkbox>
+                    <el-checkbox label="管理人员">管理人员</el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+              </div>
+            </div>
+            
+            <!-- 步骤3: 产品和市场 -->
+            <div v-show="activeStep === 2">
+              <div class="form-card">
+                <div class="card-header">
+                  <div class="card-icon">
+                    <i class="el-icon-goods"></i>
+                  </div>
+                  <h2 class="card-title">产品/服务信息</h2>
+                </div>
+                
+                <el-form-item label="产品/服务阶段" prop="productStage">
+                  <el-select v-model="startupForm.productStage" placeholder="请选择产品/服务所处阶段">
+                    <el-option label="概念阶段" value="concept"></el-option>
+                    <el-option label="原型阶段" value="prototype"></el-option>
+                    <el-option label="开发中" value="development"></el-option>
+                    <el-option label="已推出MVP" value="mvp"></el-option>
+                    <el-option label="已正式上线" value="launched"></el-option>
+                    <el-option label="规模化阶段" value="scaling"></el-option>
+                  </el-select>
+                </el-form-item>
+                
+                <el-form-item label="核心技术" prop="coreTech">
+                  <el-select
+                    v-model="startupForm.coreTech"
+                    multiple
+                    placeholder="请选择核心技术（可多选）">
+                    <el-option label="人工智能" value="AI"></el-option>
+                    <el-option label="区块链" value="blockchain"></el-option>
+                    <el-option label="云计算" value="cloud"></el-option>
+                    <el-option label="大数据" value="bigdata"></el-option>
+                    <el-option label="物联网" value="IoT"></el-option>
+                    <el-option label="VR/AR" value="VR-AR"></el-option>
+                    <el-option label="生物技术" value="biotech"></el-option>
+                    <el-option label="无技术依赖" value="none"></el-option>
+                  </el-select>
+                </el-form-item>
+                
+                <el-form-item label="产品/服务描述" prop="productDescription">
+                  <el-input 
+                    type="textarea" 
+                    v-model="startupForm.productDescription" 
+                    :rows="4"
+                    placeholder="详细描述您的产品/服务是什么，它如何运作，有哪些核心功能特点">
+                  </el-input>
+                </el-form-item>
+                
+                <el-form-item label="产品优势" prop="productAdvantage">
+                  <el-input 
+                    type="textarea" 
+                    v-model="startupForm.productAdvantage" 
+                    :rows="3"
+                    placeholder="描述产品/服务的核心优势和差异化竞争力">
+                  </el-input>
+                </el-form-item>
+                
+                <el-form-item label="知识产权" prop="intellectualProperty">
+                  <el-checkbox-group v-model="startupForm.intellectualProperty">
+                    <el-checkbox label="专利">专利</el-checkbox>
+                    <el-checkbox label="商标">商标</el-checkbox>
+                    <el-checkbox label="著作权">著作权</el-checkbox>
+                    <el-checkbox label="商业秘密">商业秘密</el-checkbox>
+                    <el-checkbox label="无知识产权">无知识产权</el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+              </div>
+              
+              <div class="form-card">
+                <div class="card-header">
+                  <div class="card-icon">
+                    <i class="el-icon-s-marketing"></i>
+                  </div>
+                  <h2 class="card-title">市场信息</h2>
+                </div>
+                
+                <el-form-item label="目标市场" prop="targetMarket">
+                  <el-input 
+                    type="textarea" 
+                    v-model="startupForm.targetMarket" 
+                    :rows="3"
+                    placeholder="描述您的目标市场和客户群体">
+                  </el-input>
+                </el-form-item>
+                
+                <el-form-item label="市场规模" prop="marketSize">
+                  <el-input-number 
+                    v-model="startupForm.marketSize" 
+                    :min="0" 
+                    controls-position="right">
+                  </el-input-number>
+                  <el-select v-model="startupForm.marketSizeUnit" style="width: 120px; margin-left: 10px;">
+                    <el-option label="百万元" value="million"></el-option>
+                    <el-option label="亿元" value="billion"></el-option>
+                  </el-select>
+                </el-form-item>
+                
+                <el-form-item label="商业模式" prop="businessModel">
+                  <el-select v-model="startupForm.businessModel" placeholder="请选择主要商业模式">
+                    <el-option label="SaaS订阅模式" value="saas"></el-option>
+                    <el-option label="电子商务" value="ecommerce"></el-option>
+                    <el-option label="广告模式" value="advertising"></el-option>
+                    <el-option label="交易佣金" value="transaction"></el-option>
+                    <el-option label="服务费用" value="service"></el-option>
+                    <el-option label="硬件销售" value="hardware"></el-option>
+                    <el-option label="内容付费" value="content"></el-option>
+                    <el-option label="其他" value="other"></el-option>
+                  </el-select>
+                </el-form-item>
+                
+                <el-form-item label="主要竞争对手" prop="competitors">
+                  <el-input 
+                    type="textarea" 
+                    v-model="startupForm.competitors" 
+                    :rows="3"
+                    placeholder="列出主要竞争对手及简要分析">
+                  </el-input>
+                </el-form-item>
+                
+                <el-form-item label="竞争优势" prop="competitiveAdvantage">
+                  <el-input 
+                    type="textarea" 
+                    v-model="startupForm.competitiveAdvantage" 
+                    :rows="3"
+                    placeholder="与竞争对手相比，您有哪些竞争优势">
+                  </el-input>
+                </el-form-item>
+              </div>
+            </div>
+            
+            <!-- 步骤4: 财务状况 -->
+            <div v-show="activeStep === 3">
+              <div class="form-card">
+                <div class="card-header">
+                  <div class="card-icon">
+                    <i class="el-icon-money"></i>
+                  </div>
+                  <h2 class="card-title">财务信息</h2>
+                </div>
+                
+                <el-form-item label="当前收入" prop="currentRevenue">
+                  <el-input-number 
+                    v-model="startupForm.currentRevenue" 
+                    :min="0" 
+                    controls-position="right">
+                  </el-input-number>
+                  <el-select v-model="startupForm.revenueTimeframe" style="width: 120px; margin-left: 10px;">
+                    <el-option label="每月" value="monthly"></el-option>
+                    <el-option label="每季度" value="quarterly"></el-option>
+                    <el-option label="每年" value="yearly"></el-option>
+                  </el-select>
+                  <span style="margin-left: 10px;">万元</span>
+                </el-form-item>
+                
+                <el-form-item label="盈亏状态" prop="profitStatus">
+                  <el-radio-group v-model="startupForm.profitStatus">
+                    <el-radio label="profitable">已盈利</el-radio>
+                    <el-radio label="breakeven">收支平衡</el-radio>
+                    <el-radio label="loss">亏损中</el-radio>
+                    <el-radio label="prerevenue">尚无收入</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                
+                <el-form-item label="主要成本" prop="mainCosts">
+                  <el-checkbox-group v-model="startupForm.mainCosts">
+                    <el-checkbox label="研发成本">研发成本</el-checkbox>
+                    <el-checkbox label="营销成本">营销成本</el-checkbox>
+                    <el-checkbox label="人力成本">人力成本</el-checkbox>
+                    <el-checkbox label="运营成本">运营成本</el-checkbox>
+                    <el-checkbox label="生产成本">生产成本</el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+                
+                <el-form-item label="预计盈亏平衡" prop="breakEvenPeriod">
+                  <el-select v-model="startupForm.breakEvenPeriod" placeholder="请选择预计实现盈亏平衡的时间">
+                    <el-option label="已实现盈亏平衡" value="already"></el-option>
+                    <el-option label="6个月内" value="6months"></el-option>
+                    <el-option label="1年内" value="1year"></el-option>
+                    <el-option label="2年内" value="2years"></el-option>
+                    <el-option label="3年以上" value="3years+"></el-option>
+                    <el-option label="不确定" value="uncertain"></el-option>
+                  </el-select>
+                </el-form-item>
+              </div>
+              
+              <div class="form-card">
+                <div class="card-header">
+                  <div class="card-icon">
+                    <i class="el-icon-s-finance"></i>
+                  </div>
+                  <h2 class="card-title">融资信息</h2>
+                </div>
+                
+                <el-form-item label="融资阶段" prop="fundingStage">
+                  <el-select v-model="startupForm.fundingStage" placeholder="请选择当前融资阶段">
+                    <el-option label="尚未融资" value="none"></el-option>
+                    <el-option label="天使轮" value="angel"></el-option>
+                    <el-option label="种子轮" value="seed"></el-option>
+                    <el-option label="Pre-A轮" value="preA"></el-option>
+                    <el-option label="A轮" value="A"></el-option>
+                    <el-option label="B轮及以上" value="B+"></el-option>
+                  </el-select>
+                </el-form-item>
+                
+                <el-form-item label="已融资金额" prop="fundingAmount">
+                  <el-input-number 
+                    v-model="startupForm.fundingAmount" 
+                    :min="0" 
+                    controls-position="right">
+                  </el-input-number>
+                  <span style="margin-left: 10px;">万元</span>
+                </el-form-item>
+                
+                <el-form-item label="估值" prop="valuation">
+                  <el-input-number 
+                    v-model="startupForm.valuation" 
+                    :min="0" 
+                    controls-position="right">
+                  </el-input-number>
+                  <span style="margin-left: 10px;">万元</span>
+                </el-form-item>
+                
+                <el-form-item label="投资方" prop="investors">
+                  <el-input 
+                    type="textarea" 
+                    v-model="startupForm.investors" 
+                    :rows="2"
+                    placeholder="请列出主要投资方（如有）">
+                  </el-input>
+                </el-form-item>
+                
+                <el-form-item label="计划融资额" prop="plannedFunding">
+                  <el-input-number 
+                    v-model="startupForm.plannedFunding" 
+                    :min="0" 
+                    controls-position="right">
+                  </el-input-number>
+                  <span style="margin-left: 10px;">万元</span>
+                </el-form-item>
+                
+                <el-form-item label="资金用途" prop="fundingPurpose">
+                  <el-input 
+                    type="textarea" 
+                    v-model="startupForm.fundingPurpose" 
+                    :rows="3"
+                    placeholder="请详细说明计划融资的资金用途">
+                  </el-input>
+                </el-form-item>
+              </div>
+              
+              <div class="form-card">
+                <div class="card-header">
+                  <div class="card-icon">
+                    <i class="el-icon-s-data"></i>
+                  </div>
+                  <h2 class="card-title">增长指标</h2>
+                </div>
+                
+                <el-form-item label="用户数" prop="userCount">
+                  <el-input-number 
+                    v-model="startupForm.userCount" 
+                    :min="0" 
+                    controls-position="right">
+                  </el-input-number>
+                </el-form-item>
+                
+                <el-form-item label="月环比增长率" prop="monthlyGrowthRate">
+                  <el-input-number 
+                    v-model="startupForm.monthlyGrowthRate" 
+                    :min="0" 
+                    :max="100"
+                    controls-position="right">
+                  </el-input-number>
+                  <span style="margin-left: 10px;">%</span>
+                </el-form-item>
+                
+                <el-form-item label="下一里程碑" prop="nextMilestone">
+                  <el-input 
+                    type="textarea" 
+                    v-model="startupForm.nextMilestone" 
+                    :rows="2"
+                    placeholder="请描述项目的下一个重要里程碑">
+                  </el-input>
+                </el-form-item>
+              </div>
+            </div>
+            
+            <!-- 表单按钮区 -->
+            <div class="action-buttons">
+              <el-button @click="prevStep" v-if="activeStep > 0">上一步</el-button>
+              <el-button type="primary" @click="nextStep" v-if="activeStep < 3">下一步</el-button>
+              <el-button type="success" @click="submitForm" v-if="activeStep === 3">提交</el-button>
+            </div>
+          </el-form>
+        </div>
+      </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-logo">
+            <img src="../../images/logo.png" alt="创业分析平台" class="logo-img">
+            <span class="logo-text">创业分析平台</span>
+          </div>
+          <div class="footer-links">
+            <div class="link-group">
+              <h3>关于我们</h3>
+              <a href="#">平台介绍</a>
+              <a href="#">联系我们</a>
+              <a href="#">使用条款</a>
+              <a href="#">隐私政策</a>
+            </div>
+            <div class="link-group">
+              <h3>数据服务</h3>
+              <a href="#">行业数据</a>
+              <a href="#">市场分析</a>
+              <a href="#">API接口</a>
+            </div>
+            <div class="link-group">
+              <h3>帮助支持</h3>
+              <a href="#">新手指南</a>
+              <a href="#">常见问题</a>
+              <a href="#">意见反馈</a>
+            </div>
+            <div class="link-group">
+              <h3>联系方式</h3>
+              <p>邮箱：contact@startup-platform.com</p>
+              <p>电话：400-123-4567</p>
+              <div class="social-links">
+                <a href="#" class="social-icon weixin"></a>
+                <a href="#" class="social-icon weibo"></a>
+                <a href="#" class="social-icon linkedin"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <div class="copyright">
+            &copy; 2025 创业分析平台 All Rights Reserved.
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/element-ui@2.15.10/lib/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios@0.24.0/dist/axios.min.js"></script>
+  <script src="../../js/config.js"></script>
+  <script src="../../js/common.js"></script>
+  <script src="./startup.js"></script>
+</body>
+</html>

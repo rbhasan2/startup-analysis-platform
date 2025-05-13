@@ -1,0 +1,118 @@
+<view class="startup-form">
+  <view class="form-header">
+    <text class="form-title">创业信息录入</text>
+    <text class="form-desc">请填写您的创业公司信息，我们将为您提供专业分析和AI洞察</text>
+  </view>
+
+  <view class="form-content">
+    <form bindsubmit="submitForm">
+      <view class="form-section">
+        <text class="section-title">基本信息</text>
+        
+        <view class="form-item">
+          <text class="form-label">公司名称</text>
+          <input class="form-input" name="companyName" placeholder="请输入公司名称" value="{{formData.companyName}}" />
+        </view>
+        
+        <view class="form-item">
+          <text class="form-label">成立时间</text>
+          <picker mode="date" value="{{formData.foundingDate}}" bindchange="bindDateChange">
+            <view class="picker">
+              {{formData.foundingDate || '请选择日期'}}
+            </view>
+          </picker>
+        </view>
+        
+        <view class="form-item">
+          <text class="form-label">所在地区</text>
+          <picker mode="region" bindchange="bindRegionChange" value="{{formData.region}}">
+            <view class="picker">
+              {{formData.region[0]}} {{formData.region[1]}} {{formData.region[2]}}
+            </view>
+          </picker>
+        </view>
+      </view>
+
+      <view class="form-section">
+        <text class="section-title">业务信息</text>
+        
+        <view class="form-item">
+          <text class="form-label">所属行业</text>
+          <picker bindchange="bindIndustryChange" value="{{industryIndex}}" range="{{industries}}">
+            <view class="picker">
+              {{industries[industryIndex]}}
+            </view>
+          </picker>
+        </view>
+        
+        <view class="form-item">
+          <text class="form-label">业务描述</text>
+          <textarea class="form-textarea" name="businessDesc" placeholder="请简要描述您的业务模式和产品服务" value="{{formData.businessDesc}}"></textarea>
+        </view>
+        
+        <view class="form-item">
+          <text class="form-label">主要产品/服务</text>
+          <input class="form-input" name="mainProduct" placeholder="请输入主要产品或服务" value="{{formData.mainProduct}}" />
+        </view>
+      </view>
+
+      <view class="form-section">
+        <text class="section-title">发展状况</text>
+        
+        <view class="form-item">
+          <text class="form-label">融资阶段</text>
+          <picker bindchange="bindFundingChange" value="{{fundingIndex}}" range="{{fundingStages}}">
+            <view class="picker">
+              {{fundingStages[fundingIndex]}}
+            </view>
+          </picker>
+        </view>
+        
+        <view class="form-item">
+          <text class="form-label">团队规模</text>
+          <picker bindchange="bindTeamSizeChange" value="{{teamSizeIndex}}" range="{{teamSizes}}">
+            <view class="picker">
+              {{teamSizes[teamSizeIndex]}}
+            </view>
+          </picker>
+        </view>
+        
+        <view class="form-item">
+          <text class="form-label">月营收范围（万元）</text>
+          <picker bindchange="bindRevenueChange" value="{{revenueIndex}}" range="{{revenueRanges}}">
+            <view class="picker">
+              {{revenueRanges[revenueIndex]}}
+            </view>
+          </picker>
+        </view>
+      </view>
+
+      <view class="form-section">
+        <text class="section-title">联系信息</text>
+        
+        <view class="form-item">
+          <text class="form-label">联系人</text>
+          <input class="form-input" name="contactPerson" placeholder="请输入联系人姓名" value="{{formData.contactPerson}}" />
+        </view>
+        
+        <view class="form-item">
+          <text class="form-label">联系电话</text>
+          <input class="form-input" name="contactPhone" placeholder="请输入联系电话" value="{{formData.contactPhone}}" />
+        </view>
+        
+        <view class="form-item">
+          <text class="form-label">电子邮箱</text>
+          <input class="form-input" name="contactEmail" placeholder="请输入电子邮箱" value="{{formData.contactEmail}}" />
+        </view>
+      </view>
+      
+      <view class="submit-section">
+        <button class="submit-btn" form-type="submit" loading="{{submitting}}">提交信息</button>
+      </view>
+    </form>
+  </view>
+
+  <view class="form-tips">
+    <text class="tips-text">提交后，系统将自动收集公开信息进行分析，请稍后查看"分析"和"AI洞察"页面获取结果</text>
+  </view>
+</view>

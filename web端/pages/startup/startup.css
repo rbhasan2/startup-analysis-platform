@@ -1,0 +1,142 @@
+/* 创业表单页面样式 */
+
+.startup-page {
+  padding: 30px 0;
+}
+
+.page-header {
+  margin-bottom: 30px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 10px;
+}
+
+.page-description {
+  color: #606266;
+  font-size: 16px;
+}
+
+/* 表单卡片 */
+.form-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  margin-bottom: 30px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.card-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #e6f7ff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+}
+
+.card-icon i {
+  font-size: 22px;
+  color: #1890ff;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* 表单样式覆盖 */
+.startup-form .el-form-item__label {
+  font-weight: 500;
+}
+
+.form-divider {
+  margin: 30px 0;
+}
+
+.action-buttons {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* 上传组件样式 */
+.upload-box {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.upload-box:hover {
+  border-color: #1890ff;
+}
+
+.upload-icon {
+  font-size: 28px;
+  color: #8c939d;
+  margin-bottom: 10px;
+}
+
+.upload-text {
+  color: #606266;
+  font-size: 14px;
+}
+
+.file-list {
+  margin-top: 20px;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.file-name {
+  display: flex;
+  align-items: center;
+}
+
+.file-name i {
+  margin-right: 8px;
+}
+
+/* 进度条样式 */
+.steps-wrapper {
+  margin-bottom: 40px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .form-card {
+    padding: 20px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .action-buttons .el-button {
+    width: 100%;
+  }
+}
