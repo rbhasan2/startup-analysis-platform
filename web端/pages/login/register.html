@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>登录 - 创业分析平台</title>
+  <title>注册 - 创业分析平台</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-ui@2.15.10/lib/theme-chalk/index.css">
   <link rel="stylesheet" href="../../css/common.css">
   <link rel="stylesheet" href="./login.css">
@@ -18,45 +18,12 @@
         </div>
 
         <div class="tabs">
-          <div :class="['tab-item', activeTab === 'login' ? 'active' : '']" @click="activeTab = 'login'">登录</div>
-          <div :class="['tab-item', activeTab === 'register' ? 'active' : '']" @click="activeTab = 'register'">注册</div>
-        </div>
-
-        <!-- 登录表单 -->
-        <div v-if="activeTab === 'login'" class="form-container">
-          <el-form :model="loginForm" :rules="loginRules" ref="loginForm" label-position="top">
-            <el-form-item label="用户名/邮箱" prop="username">
-              <el-input v-model="loginForm.username" placeholder="请输入用户名或邮箱"></el-input>
-            </el-form-item>
-            <el-form-item label="密码" prop="password">
-              <el-input type="password" v-model="loginForm.password" placeholder="请输入密码" show-password></el-input>
-            </el-form-item>
-            <div class="form-options">
-              <el-checkbox v-model="rememberMe">记住我</el-checkbox>
-              <a href="./forgot-password.html" class="forgot-link">忘记密码?</a>
-            </div>
-            <el-button type="primary" class="submit-btn" :loading="loading.login" @click="handleLogin">登录</el-button>
-          </el-form>
-          
-          <div class="other-login">
-            <div class="divider">
-              <span class="divider-text">其他登录方式</span>
-            </div>
-            <div class="social-login">
-              <button class="social-btn wechat">
-                <span class="icon"></span>
-                <span>微信登录</span>
-              </button>
-              <button class="social-btn dingtalk">
-                <span class="icon"></span>
-                <span>钉钉登录</span>
-              </button>
-            </div>
-          </div>
+          <div class="tab-item" @click="goToLogin">登录</div>
+          <div class="tab-item active">注册</div>
         </div>
 
         <!-- 注册表单 -->
-        <div v-else class="form-container">
+        <div class="form-container">
           <el-form :model="registerForm" :rules="registerRules" ref="registerForm" label-position="top">
             <el-form-item label="用户名" prop="username">
               <el-input v-model="registerForm.username" placeholder="请设置用户名"></el-input>
@@ -73,12 +40,16 @@
             <el-form-item class="agreement">
               <el-checkbox v-model="registerForm.agreement" required>我已阅读并同意<a href="../about/terms.html" target="_blank">服务条款</a>和<a href="../about/privacy.html" target="_blank">隐私政策</a></el-checkbox>
             </el-form-item>
-            <el-button type="primary" class="submit-btn" :loading="loading.register" @click="handleRegister">注册</el-button>
+            <el-button type="primary" class="submit-btn" :loading="loading" @click="handleRegister">注册</el-button>
           </el-form>
+          
+          <div class="login-link">
+            已有账号？<a href="./index.html">登录</a>
+          </div>
         </div>
       </div>
 
-      <!-- 登录页面右侧信息区域 -->
+      <!-- 注册页面右侧信息区域 -->
       <div class="info-panel">
         <div class="info-content">
           <h2 class="info-title">数据驱动的创业决策</h2>
@@ -113,13 +84,104 @@
       </div>
     </div>
   </div>
-
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/element-ui@2.15.10/lib/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios@0.24.0/dist/axios.min.js"></script>
   <script src="../../js/config.js"></script>
   <script src="../../js/common.js"></script>
   <script src="../../js/fix-images.js"></script>
-  <script src="./login.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data() {
+        // 验证密码与确认密码是否一致
+        const validateConfirmPassword = (rule, value, callback) => {
+          if (value !== this.registerForm.password) {
+            callback(new Error('两次输入的密码不一致'));
+          } else {
+            callback();
+          }
+        };
+
+        return {
+          registerForm: {
+            username: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+            agreement: false
+          },
+          registerRules: {
+            username: [
+              { required: true, message: '请输入用户名', trigger: 'blur' },
+              { min: 3, max: 20, message: '用户名长度在3到20个字符之间', trigger: 'blur' }
+            ],
+            email: [
+              { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+              { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
+            ],
+            password: [
+              { required: true, message: '请设置密码', trigger: 'blur' },
+              { min: 6, message: '密码不能少于6个字符', trigger: 'blur' }
+            ],
+            confirmPassword: [
+              { required: true, message: '请确认密码', trigger: 'blur' },
+              { validator: validateConfirmPassword, trigger: 'blur' }
+            ],
+            agreement: [
+              { validator: (rule, value, callback) => {
+                if (!value) {
+                  callback(new Error('请阅读并同意服务条款和隐私政策'));
+                } else {
+                  callback();
+                }
+              }, trigger: 'change' }
+            ]
+          },
+          loading: false
+        };
+      },
+      methods: {
+        goToLogin() {
+          window.location.href = './index.html';
+        },
+        handleRegister() {
+          this.$refs.registerForm.validate(valid => {
+            if (!valid) {
+              return;
+            }
+
+            this.loading = true;
+            
+            // API请求
+            axios.post(API_BASE_URL + '/api/user/register', {
+              username: this.registerForm.username,
+              email: this.registerForm.email,
+              password: this.registerForm.password
+            })
+            .then(response => {
+              if (response.data && response.data.code === 0) {
+                this.$message.success('注册成功！正在跳转到登录页...');
+                
+                // 延迟跳转到登录页
+                setTimeout(() => {
+                  window.location.href = './index.html';
+                }, 1500);
+              } else {
+                this.$message.error(response.data.message || '注册失败，请稍后重试');
+              }
+            })
+            .catch(error => {
+              console.error('注册请求错误:', error);
+              this.$message.error('注册失败，请检查网络连接或稍后重试');
+            })
+            .finally(() => {
+              this.loading = false;
+            });
+          });
+        }
+      }
+    });
+  </script>
 </body>
 </html>

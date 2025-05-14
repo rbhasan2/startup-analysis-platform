@@ -14,7 +14,7 @@ window.Auth = {
   login: function(username, password) {
     this.setUserInfo({
       name: username,
-      avatar: '../images/avatar-default.png'
+      avatar: 'images/avatar-default.png'
     });
     localStorage.setItem('isLoggedIn', true);
     return true;
@@ -37,10 +37,26 @@ window.isLogin = function() {
 const app = new Vue({
   el: '#app',
   data() {
+    // 确保有默认用户数据用于演示
+    if (!Auth.isLoggedIn()) {
+      // 为了开发环境演示，设置一个默认用户
+      const demoUser = {
+        name: '测试用户',
+        username: 'tester',
+        avatar: 'images/avatar-default.png'
+      };
+      Auth.setUserInfo(demoUser);
+      localStorage.setItem('isLoggedIn', 'true');
+    }
+    
     return {
       // 用户信息
-      isLogin: Auth.isLoggedIn(),
-      userInfo: Auth.getUserInfo() || {},
+      isLogin: true, // 开发环境中，总是显示为已登录
+      userInfo: Auth.getUserInfo() || {
+        name: '测试用户',
+        username: 'tester',
+        avatar: 'images/avatar-default.png'
+      },
       
       // 平台统计数据
       stats: {

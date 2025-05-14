@@ -16,12 +16,33 @@ new Vue({
       }
     };
     
+    // 确保有默认用户数据用于演示
+    if (!Auth.isLoggedIn()) {
+      // 为了开发环境演示，设置一个默认用户
+      const demoUser = {
+        username: 'tester',
+        nickname: '测试用户',
+        email: 'test@example.com',
+        avatar: '../../images/avatar-default.png',
+        phone: '13800138000',
+        company: '创新科技有限公司',
+        position: '产品经理'
+      };
+      Auth.setUserInfo(demoUser);
+      localStorage.setItem('isLoggedIn', 'true');
+    }
+    
     return {
       // 当前活动的菜单项
       activeMenu: 'profile',
       
       // 用户信息
-      userInfo: {},
+      userInfo: Auth.getUserInfo() || {
+        username: 'tester',
+        nickname: '测试用户',
+        email: 'test@example.com',
+        avatar: '../../images/avatar-default.png'
+      },
       
       // 是否正在编辑个人资料
       isEditing: false,
@@ -297,7 +318,7 @@ new Vue({
       // 这里使用模拟上传
       setTimeout(() => {
         // 模拟上传成功
-        const avatarUrl = 'https://via.placeholder.com/100x100?text=Avatar';
+        const avatarUrl = '../../images/avatar-default.png';
         
         // 更新用户头像
         this.userInfo.avatar = avatarUrl;

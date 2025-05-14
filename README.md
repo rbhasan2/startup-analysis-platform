@@ -18,6 +18,14 @@
 
 ## 启动方法
 
+### 0. 一键启动
+在PowerShell中执行：
+```
+.\start_all_services.ps1
+```
+会依次启动NocoBase后端、数据分析服务(Superset)、爬虫系统(Spider-Flow)和AI模型服务，并提供选项启动Web端。
+
+
 ### 1. 启动NocoBase后端
 ```
 cd 后端服务/nocobase

@@ -558,6 +558,11 @@ const Auth = {
     localStorage.setItem(CONFIG.storage.userInfo, JSON.stringify(user));
   },
 
+  // 更新用户信息
+  updateUserInfo(user) {
+    localStorage.setItem(CONFIG.storage.userInfo, JSON.stringify(user));
+  },
+
   // 退出登录
   logout() {
     localStorage.removeItem(CONFIG.storage.token);
