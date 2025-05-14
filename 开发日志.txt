@@ -6,3 +6,8 @@ API调用错误导致docker中的服务错误，包括nocobase,superset,dify
 
 -更新-5.14
 更新了一键启动的功能
+
+-问题-5.14
+    docker无法获取爬虫服务的镜像
+    已解决：原因是之前用的是spiderflow/spider-flow:0.1.3镜像，是能拉下过的，不知道为何用不了了
+        所以现在得去docker上重新找了个 image: wbsu2003/spider-flow:latest

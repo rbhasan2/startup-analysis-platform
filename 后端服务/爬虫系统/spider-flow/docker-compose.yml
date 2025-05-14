@@ -1,7 +1,7 @@
 version: '3.3'
 services:
   spider-flow:
-    image: spiderflow/spider-flow:latest
+    image: wbsu2003/spider-flow:latest
     restart: always
     ports:
       - '8889:8080'
