@@ -2,17 +2,23 @@
  * 创业分析平台 - 公共脚本
  */
 
-// 统一API请求方法
+// 统一前后端API请求方法
 const API = {
   // 获取完整URL
   getUrl(path) {
-    return CONFIG.apiBaseUrl + path;
+    return CONFIG.apiBaseUrl + path;//拼接完整API请求url
   },
 
   // GET请求
-  async get(url, params = {}) {
-    const token = localStorage.getItem(CONFIG.storage.token);
-    
+  async get(url, params = {}) {//发起一个异步的HTTP GET请求
+    // 从localStorage中获取token
+    // token用于身份验证
+    // 这里假设token存储在localStorage中
+    // 你可以根据实际情况修改存储位置
+    // 例如：sessionStorage、cookie等
+    // 也可以使用Vuex等状态管理工具
+    // 这里使用localStorage作为示例
+
     // 构建查询字符串
     const queryParams = Object.keys(params).map(key => {
       return `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`;

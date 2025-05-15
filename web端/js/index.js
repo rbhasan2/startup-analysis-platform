@@ -43,7 +43,7 @@ const app = new Vue({
       const demoUser = {
         name: '测试用户',
         username: 'tester',
-        avatar: 'images/avatar-default.png'
+        avatar: 'images/avatar-default.jpg'
       };
       Auth.setUserInfo(demoUser);
       localStorage.setItem('isLoggedIn', 'true');
@@ -55,7 +55,7 @@ const app = new Vue({
       userInfo: Auth.getUserInfo() || {
         name: '测试用户',
         username: 'tester',
-        avatar: 'images/avatar-default.png'
+        avatar: 'images/avatar-default.jpg'
       },
       
       // 平台统计数据

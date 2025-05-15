@@ -15,7 +15,7 @@
       <div class="container navbar-container">
         <div class="navbar-left">
           <a href="../../index.html" class="logo">
-            <img src="../../images/logo.png" alt="创业分析平台" class="logo-img">
+            <img src="../../images/logo.jpg" alt="创业分析平台" class="logo-img">
             <span class="logo-text">创业分析平台</span>
           </a>
           <nav class="main-nav">
@@ -29,7 +29,7 @@
           <div class="user-info">
             <el-dropdown trigger="click" @command="handleCommand">
               <span class="el-dropdown-link user-dropdown">
-                <img :src="userInfo.avatar || '../../images/avatar-default.png'" class="user-avatar">
+                <img :src="userInfo.avatar || '../../images/avatar-default.jpg'" class="user-avatar">
                 <span class="username">{{ userInfo.nickname || userInfo.username }}</span>
                 <i class="el-icon-arrow-down"></i>
               </span>
@@ -658,7 +658,12 @@
   <script src="https://cdn.jsdelivr.net/npm/axios@0.24.0/dist/axios.min.js"></script>
   <script src="../../js/config.js"></script>
   <script src="../../js/common.js"></script>
+  <script src="../../js/image-preload.js"></script>
+  <script src="../../js/fix-images-direct.js"></script>
   <script src="../../js/fix-images.js"></script>
+  <script src="../../js/image-loader.js"></script>
+  <script src="../../js/image-debug.js"></script>
+  <script src="../../js/image-test-tool.js"></script>
   <script src="./startup.js"></script>
 </body>
 </html>

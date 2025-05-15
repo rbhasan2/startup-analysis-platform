@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>创业分析平台 - 图片测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .test-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .test-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .test-item img {
+            max-width: 100%;
+            max-height: 150px;
+            margin-bottom: 10px;
+        }
+        .test-item h3 {
+            margin: 0;
+            font-size: 14px;
+        }
+        .test-item p {
+            margin: 5px 0;
+            font-size: 12px;
+            color: #666;
+        }
+        .controls {
+            margin: 20px 0;
+            text-align: center;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+        button.danger {
+            background-color: #f44336;
+        }
+        .timestamp {
+            color: #999;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        .status {
+            color: #666;
+            margin: 10px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>创业分析平台 - 图片测试页面</h1>
+    
+    <div class="controls">
+        <button onclick="reloadAllImages()">强制重载所有图片</button>
+        <button class="danger" onclick="clearBrowserCache()">清除缓存并刷新</button>
+    </div>
+    
+    <div class="status">
+        正在测试所有必要图片...
+    </div>
+    
+    <div class="test-container" id="test-container">
+        <!-- 图片测试项会被动态添加 -->
+    </div>
+    
+    <p class="timestamp">
+        生成时间: <span id="timestamp"></span>
+    </p>
+    
+    <script>
+        // 设置时间戳
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        
+        // 图片列表
+        const images = [
+            "ai-avatar.png",
+            "ai-avatar.svg",
+            "avatar-default.png",
+            "avatar-default.svg",
+            "banner-illustration.png",
+            "empty-data.svg",
+            "logo-alt.svg",
+            "logo-white.png",
+            "logo.png",
+            "logo.svg",
+        ];
+        
+        // 创建测试项
+        const container = document.getElementById('test-container');
+        
+        images.forEach(img => {
+            const item = document.createElement('div');
+            item.className = 'test-item';
+            
+            const imgEl = document.createElement('img');
+            const timestamp = Date.now();
+            imgEl.src = `./images/${img}?t=${timestamp}`;
+            imgEl.alt = img;
+            
+            const title = document.createElement('h3');
+            title.textContent = img;
+            
+            const status = document.createElement('p');
+            status.id = `status-${img.replace(/[^a-zA-Z0-9]/g, '-')}`;
+            status.textContent = '加载中...';
+
+            const pathInfo = document.createElement('p');
+            pathInfo.textContent = `路径: ./images/${img}`;
+            pathInfo.style.color = '#999';
+            pathInfo.style.fontSize = '12px';
+            
+            imgEl.onload = function() {
+                status.textContent = '✅ 加载成功';
+                status.style.color = '#4CAF50';
+            };
+            
+            imgEl.onerror = async function() {
+                status.textContent = '❌ 加载失败';
+                status.style.color = '#f44336';
+
+                // Fetch 请求以获取响应状态码
+                try {
+                    const response = await fetch(`./images/${img}`);
+                    if (!response.ok) {
+                        status.textContent += ` (HTTP ${response.status})`;
+                    }
+                } catch (error) {
+                    status.textContent += ' (无法连接到服务器)';
+                }
+            };
+            
+            item.appendChild(imgEl);
+            item.appendChild(title);
+            item.appendChild(status);
+            item.appendChild(pathInfo);
+            container.appendChild(item);
+        });
+        
+        // 强制重载所有图片
+        function reloadAllImages() {
+            const timestamp = Date.now();
+            document.querySelectorAll('img').forEach(img => {
+                const src = img.src.split('?')[0];
+                img.src = `${src}?t=${timestamp}`;
+            });
+        }
+        
+        // 清除缓存并刷新
+        function clearBrowserCache() {
+            if (window.location.href.indexOf('?') > -1) {
+                window.location.href = window.location.href;
+            } else {
+                window.location.href = window.location.href + '?clearcache=' + new Date().getTime();
+            }
+        }
+    </script>
+</body>
+</html>

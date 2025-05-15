@@ -28,7 +28,9 @@ function fixPath(originalPath, type) {
   
   // 如果是绝对路径（以/开头）
   if (originalPath.startsWith('/')) {
-    return originalPath;
+    // 如果是基于根目录的绝对路径，需要去掉前导斜杠
+    return originalPath.startsWith('/images/') ? 
+      `${basePath}${originalPath}` : originalPath;
   }
   
   // 如果已经包含正确的相对路径前缀
@@ -253,8 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // 最后再次检查页面加载完成后的图片状态
 window.addEventListener('load', function() {
   console.log('🔄 页面完全加载，进行最终图片检查...');
-  
-  // 检查所有图片
+    // 检查所有图片
   document.querySelectorAll('img').forEach(img => {
     // 检查是否还有未正确加载的图片
     if (img.complete && img.naturalHeight === 0) {
@@ -273,6 +274,9 @@ window.addEventListener('load', function() {
       } else if (originalSrc.includes('empty')) {
         img.src = fixPath(null, 'empty');
       }
+      
+      // 输出最终解析的URL路径，方便调试
+      console.log('🔍 图片最终路径:', img.src, '完整URL:', new URL(img.src, window.location.href).href);
     }
   });
   
@@ -285,4 +289,57 @@ window.addEventListener('load', function() {
       console.log('🔄 最终修复用户头像:', app.userInfo.avatar);
     }
   }
-});
+  
+  // 尝试修复特定标签内的背景图片
+  document.querySelectorAll('[style*="background-image"]').forEach(el => {
+    const style = el.getAttribute('style');
+    if (style && style.includes('url(')) {
+      try {
+        const urlMatch = style.match(/url\(['"]?([^'"]+)['"]?\)/);
+        if (urlMatch && urlMatch[1]) {
+          const originalUrl = urlMatch[1];
+          // 只处理相对路径的图片URL
+          if (!originalUrl.startsWith('data:') && 
+              !originalUrl.startsWith('http://') && 
+              !originalUrl.startsWith('https://')) {
+            
+            // 根据图片类型确定替换方式
+            let imgType = 'other';
+            if (originalUrl.includes('avatar')) imgType = 'avatar';
+            else if (originalUrl.includes('logo-white')) imgType = 'logo-white';
+            else if (originalUrl.includes('logo')) imgType = 'logo';
+            else if (originalUrl.includes('banner')) imgType = 'banner';
+            else if (originalUrl.includes('empty')) imgType = 'empty';
+            else if (originalUrl.includes('ai')) imgType = 'ai';
+            
+            const fixedUrl = fixPath(originalUrl, imgType);
+            if (fixedUrl !== originalUrl) {
+              const newStyle = style.replace(
+                /url\(['"]?([^'"]+)['"]?\)/, 
+                `url('${fixedUrl}')`
+              );
+              el.setAttribute('style', newStyle);
+              console.log(`🖼️ 修复背景图片: ${originalUrl} -> ${fixedUrl}`);
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('修复背景图片时出错:', e);
+      }
+    }
+  });
+}
+);
+
+const imageMap = {
+  'avatar-default.png': 'avatar-default.jpg',
+  'avatar-default.svg': 'avatar-default.jpg',
+  'ai-avatar.png': 'ai-avatar.jpg',
+  'ai-avatar.svg': 'ai-avatar.jpg',
+  'empty-data.png': 'empty-data.jpg',
+  'empty-data.svg': 'empty-data.jpg',
+  'logo.png': 'logo.jpg',
+  'logo.svg': 'logo.jpg',
+  'logo-white.png': 'logo-white.jpg',
+  'logo-white.svg': 'logo-white.jpg'
+};

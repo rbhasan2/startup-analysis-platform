@@ -1,6 +1,6 @@
 -问题-5.14
-web端图片显示错误
-API调用错误导致docker中的服务错误，包括nocobase,superset,dify
+    web端图片显示错误
+API调用错误导致docker中的服务错误，包括nocobase,superset,dify，显示的一直是模拟数据
 分析结果的导出也有问题
 在“我的”中的历史记录还没有定义
 
@@ -11,3 +11,17 @@ API调用错误导致docker中的服务错误，包括nocobase,superset,dify
     docker无法获取爬虫服务的镜像
     已解决：原因是之前用的是spiderflow/spider-flow:0.1.3镜像，是能拉下过的，不知道为何用不了了
         所以现在得去docker上重新找了个 image: wbsu2003/spider-flow:latest
+
+-问题-5.15
+后端:
+进入8000端口无法查看到数据
+无法进入8080
+    web端图片显示还是有错误
+
+-更新-5.15
+加了一个 image-test 页面，一开live server错误就跳出来了
+
+-修复图片无法显示问题-5.15
+通过 image-test.html 发现后缀名为 png 的图片都加载不出来，他们都是从 svg 格式copy过来的
+原来不是代码的问题，是图片的问题
+于是我将svg、png格式的删了，把 index.js、index.html以及pages里的html 里面的图片全部转为用 jpg 格式的新图片

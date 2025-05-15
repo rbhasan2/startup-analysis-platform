@@ -14,7 +14,7 @@
     <header class="header">
       <div class="container">
         <div class="logo">
-          <img src="images/logo.png" alt="创业分析平台" class="logo-img">
+          <img src="images/logo.jpg" alt="创业分析平台" class="logo-img">
           <span class="logo-text">创业分析平台</span>
         </div>
         <nav class="nav">
@@ -28,7 +28,7 @@
           <span class="welcome">欢迎，{{ userInfo.name || userInfo.username }}</span>
           <el-dropdown @command="handleUserAction">
             <span class="el-dropdown-link">
-              <img :src="userInfo.avatar || 'images/avatar-default.png'" alt="头像" class="avatar">
+              <img :src="userInfo.avatar || 'images/avatar-default.jpg'" alt="头像" class="avatar">
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
@@ -58,7 +58,7 @@
           </div>
           </div>
           <div class="banner-image">
-            <img src="images/banner-illustration.png" alt="创业分析平台" class="illustration">
+            <img src="images/banner-illustration.jpg" alt="创业分析平台" class="illustration">
           </div>
         </div>
       </section>
@@ -163,7 +163,7 @@
       <div class="container">
         <div class="footer-content">
           <div class="footer-logo">
-            <img src="images/logo-white.png" alt="创业分析平台" class="logo-img">
+            <img src="images/logo-white.jpg" alt="创业分析平台" class="logo-img">
             <span class="logo-text">创业分析平台</span>
           </div>
           <div class="footer-links">
@@ -208,12 +208,38 @@
     </footer>
   </div>
 
+  <script>
+    // 直接内联修复图片路径的初始化代码，确保尽早执行
+    (function() {
+      console.log('初始化图片直接修复...');
+      document.addEventListener('DOMContentLoaded', function() {
+        // 修复所有图片路径
+        document.querySelectorAll('img').forEach(function(img) {
+          const src = img.getAttribute('src');
+          if (src && !src.startsWith('data:') && !src.startsWith('http:') && !src.startsWith('https:')) {
+            if (!src.startsWith('images/')) {
+              const type = src.includes('avatar') ? 'avatar-default.jpg' :
+                         src.includes('logo-white') ? 'logo-white.jpg' :
+                         src.includes('logo') ? 'logo.jpg' :
+                         'avatar-default.jpg';
+              img.setAttribute('src', './images/' + type);
+            }
+          }
+        });
+      });
+    })();
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/element-ui@2.15.10/lib/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios@0.24.0/dist/axios.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/common.js"></script>
+  <script src="js/image-preload.js"></script>
+  <script src="js/fix-images-direct.js"></script>
   <script src="js/fix-images.js"></script>
+  <script src="js/image-loader.js"></script>
+  <script src="js/image-debug.js"></script>
+  <script src="js/image-test-tool.js"></script>
   <script src="js/index.js"></script>
 </body>
 </html>

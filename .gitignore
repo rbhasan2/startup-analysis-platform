@@ -28,6 +28,11 @@ docker-data/
 *.sqlite
 *.db-journal
 *.log
+*.sock
+mysql-data/*.sock
+mysql-data/mysql.sock
+后端服务/爬虫系统/spider-flow/mysql-data/mysql.sock
+后端服务/爬虫系统/spider-flow/mysql-data/*.sock
 
 # 凭证和敏感文件
 .env.local

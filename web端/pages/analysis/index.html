@@ -17,7 +17,7 @@
       <div class="container navbar-container">
         <div class="navbar-left">
           <a href="../../index.html" class="logo">
-            <img src="../../images/logo.png" alt="创业分析平台" class="logo-img">
+            <img src="../../images/logo.svg" alt="创业分析平台" class="logo-img">
             <span class="logo-text">创业分析平台</span>
           </a>
           <nav class="main-nav">
@@ -373,12 +373,38 @@
     </footer>
   </div>
 
+  <script>
+    // 直接内联修复图片路径的初始化代码，确保尽早执行
+    (function() {
+      console.log('初始化图片直接修复（子页面）...');
+      document.addEventListener('DOMContentLoaded', function() {
+        // 修复所有图片路径
+        document.querySelectorAll('img').forEach(function(img) {
+          const src = img.getAttribute('src');
+          if (src && !src.startsWith('data:') && !src.startsWith('http:') && !src.startsWith('https:')) {
+            if (!src.startsWith('../../images/')) {
+              const type = src.includes('avatar') ? 'avatar-default.jpg' :
+                         src.includes('logo-white') ? 'logo.svg' :
+                         src.includes('logo') ? 'logo.svg' :
+                         'avatar-default.png';
+              img.setAttribute('src', '../../images/' + type);
+            }
+          }
+        });
+      });
+    })();
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/element-ui@2.15.10/lib/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios@0.24.0/dist/axios.min.js"></script>
   <script src="../../js/config.js"></script>
   <script src="../../js/common.js"></script>
+  <script src="../../js/image-preload.js"></script>
+  <script src="../../js/fix-images-direct.js"></script>
   <script src="../../js/fix-images.js"></script>
+  <script src="../../js/image-loader.js"></script>
+  <script src="../../js/image-debug.js"></script>
+  <script src="../../js/image-test-tool.js"></script>
   <script src="./analysis.js"></script>
 </body>
 </html>

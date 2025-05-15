@@ -15,7 +15,7 @@
       <div class="container navbar-container">
         <div class="navbar-left">
           <a href="../../index.html" class="logo">
-            <img src="../../images/logo.png" alt="创业分析平台" class="logo-img">
+            <img src="../../images/logo.svg" alt="创业分析平台" class="logo-img">
             <span class="logo-text">创业分析平台</span>
           </a>
           <nav class="main-nav">
@@ -56,7 +56,7 @@
           <div class="sidebar">
             <div class="user-card">
               <div class="user-avatar-large">
-                <img :src="userInfo.avatar || '../../images/avatar-default.png'" alt="用户头像">
+                <img :src="userInfo.avatar || '../../images/avatar-default.jpg'" alt="用户头像">
                 <div class="upload-avatar-btn" @click="showUploadDialog">
                   <i class="el-icon-camera"></i>
                 </div>
@@ -232,7 +232,7 @@
       <div class="container">
         <div class="footer-content">
           <div class="footer-logo">
-            <img src="../../images/logo.png" alt="创业分析平台" class="logo-img">
+            <img src="../../images/logo.jpg" alt="创业分析平台" class="logo-img">
             <span class="logo-text">创业分析平台</span>
           </div>
           <div class="footer-links">
@@ -301,7 +301,12 @@
   <script src="https://cdn.jsdelivr.net/npm/axios@0.24.0/dist/axios.min.js"></script>
   <script src="../../js/config.js"></script>
   <script src="../../js/common.js"></script>
+  <script src="../../js/image-preload.js"></script>
+  <script src="../../js/fix-images-direct.js"></script>
   <script src="../../js/fix-images.js"></script>
+  <script src="../../js/image-loader.js"></script>
+  <script src="../../js/image-debug.js"></script>
+  <script src="../../js/image-test-tool.js"></script>
   <script src="./user.js"></script>
 </body>
 </html>
